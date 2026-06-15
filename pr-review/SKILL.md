@@ -112,12 +112,14 @@ Don't make extra API calls when the same data is already available from a call a
 ## Comment style
 
 - Label everything: use `**blocker:**`, `**suggestion:**`, or `**question:**` — exactly these labels, no others
-- Be specific: cite file names and line numbers when possible
+- **Be concise** — state the finding and the action. Do not narrate what the code does or explain what you found correct. Trust the author to understand with minimal context.
+- **Cite file:line, not descriptions** — write `processChatIntegrationEvent.ts:102`, not "the impersonation code in the Temporal activity". If the reference is self-evident from the label, omit it.
 - When flagging an AC violation, quote the AC text directly
-- When flagging a missing pattern, name the file where the pattern exists
+- When flagging a coding standards violation, link the standard
 - Ask `**question:**` when you want to understand the rationale behind a decision — not to demand a change, but to flag something that needs explanation
 - Do not summarize what the PR does — that's not a review
 - Do not add filler or praise unless something is genuinely exceptional
+- Do not pad findings with explanations of what is correct — only flag what is wrong or improvable
 
 ---
 

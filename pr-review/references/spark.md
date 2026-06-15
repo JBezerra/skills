@@ -19,6 +19,7 @@ Patterns JBezerra consistently flags on backend code (services, hooks, jobs, uti
 
 - **Co-location over shared utils** — if a helper is only used in one service, move it next to that service. Generic utils belong in shared files only when they're genuinely reusable across the codebase.
 - **Avoid over-abstraction** — inline simple database calls directly in the service so behavior is explicit. One-off wrappers that hide a single call are a net negative.
+- **Inline single-use functions with no complex logic** — **suggestion:** if a function is called in exactly one place and its body is trivial, inline it. Extracting it adds indirection with no reuse benefit.
 - **Prefer Feathers service over middleware** — **question:** flag any new middleware that could instead be a standard Feathers service.
 - **Config belongs next to its usage, not in env vars** — **blocker:** moving non-secret config into `.env` is wrong; colocate it with the code that uses it.
 - **Consolidate auth methods in one service** — don't create a separate service for each auth mechanism; encapsulate all auth variants in the existing `feathers` service.
@@ -40,6 +41,7 @@ Patterns JBezerra consistently flags on backend code (services, hooks, jobs, uti
 ### Tests & Observability
 
 - **Tests must gate bugs, not mock configs** — tests that only verify mocks work, configs exist, or that values pass through (`thread_ts`, etc.) add no value. Test business logic extracted into pure functions.
+- **Drop low-ROI test suites** — **suggestion:** if a suite tests a simple utility with no branching logic and no realistic failure mode, drop it. The cost of maintaining the test outweighs the coverage signal.
 - **`isDeleted: false` is wrong** — **take or leave:** use `isDeleted: { $ne: true }` to match the codebase's pattern.
 
 ### AI / Prompts
