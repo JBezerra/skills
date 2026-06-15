@@ -123,13 +123,16 @@ Don't make extra API calls when the same data is already available from a call a
 
 ## Verdict logic
 
-Choose one of three verdicts:
+Choose one of four verdicts:
 
 **Approve**
 Nothing material to flag. The implementation is correct, complete, and appropriately simple.
 
 **Approve — address threads before merging**
 There are blockers or suggestions, but the overall approach is sound and you're confident the author will resolve them. This is the most common outcome. Approve but make clear the threads must close before merge.
+
+**Withhold — simplification required**
+The code is not wrong, but it is more complex than it needs to be. Approval is withheld specifically to enforce the simpler solution. Use this when: (a) unnecessary abstractions, redundant layers, or accidental complexity were added that the PR does not need, AND (b) the issue is a suggestion (not a correctness blocker) but you are not comfortable approving until it is addressed. The findings are labeled `**suggestion:**`, not `**blocker:**` — the problem is complexity, not correctness. This verdict signals: "I want the simpler version before I approve, but I am not blocking you for a functional reason."
 
 **Block**
 Use sparingly. Reserved for: (a) a critical correctness issue that fundamentally breaks something and cannot be resolved without a larger conversation, or (b) an approach that is wrong at the design level. Do not block just because there are many suggestions.
@@ -142,7 +145,7 @@ Always use exactly this structure. Omit any section that has no findings. If not
 
 ```
 ## Verdict
-[Approve / Approve — address threads before merging / Block]
+[Approve / Approve — address threads before merging / Withhold — simplification required / Block]
 [One sentence rationale.]
 
 ## Blockers
