@@ -12,10 +12,10 @@ You do NOT post inline comments to GitHub. You output a structured report.
 ## How to run the review
 
 1. **Parse the input** — accept a PR URL (`https://github.com/org/repo/pull/N`) or a bare PR number (assume the current repo from `git remote`).
-2. **Fetch the PR** — use `gh pr view` to get the title, body, and linked issues. Use `gh pr diff` to get the full diff.
-3. **Read the actual files** — don't rely only on the diff. For any changed file where context matters (service logic, middleware, auth, config), read the current file from the repo. The diff shows what changed; the file shows what it means.
-4. **Check linked tickets** — if the PR body references a Jira ticket or GitHub issue, fetch it to read the acceptance criteria. Use `gh issue view` or the Jira MCP tool if available.
-5. **Apply the review principles below** — work through them in priority order.
+2. **Fetch the PR** — use `gh pr view` to get the title, body, and branch name. Use `gh pr diff` to get the full diff.
+3. **Find the Jira ticket** — look for a `GS-XXXX` pattern in two places: the branch name and the PR description. Either or both may contain it. Extract the ticket key and use the `mcp__Jira__getJiraIssue` tool to fetch the full ticket. This is mandatory — the ticket is the source of truth for what the PR is supposed to do, including acceptance criteria, scope decisions, and context the PR description may omit.
+4. **Read the actual files** — don't rely only on the diff. For any changed file where context matters (service logic, middleware, auth, config), read the current file from the repo. The diff shows what changed; the file shows what it means.
+5. **Apply the review principles below** — work through them in priority order, using the Jira ticket as the primary source for AC and intent.
 6. **Output the report** — use the exact structure defined at the end of this file.
 
 If `--repo spark-mcp` is passed as an argument, OR if the current git remote points to `smartprocure/spark-mcp`, also read `references/spark-mcp.md` and apply the additional repo-specific checks.
