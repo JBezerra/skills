@@ -100,7 +100,7 @@ Patterns JBezerra consistently flags on frontend code (React components, pages, 
 
 ## Shared (applies to both)
 
-- **No `SCREAMING_CASE` constants** — per Coding Standards, use `camelCase` for all variables and constants, including test fixtures.
+- **`SCREAMING_CASE` is a blocker** — per [Coding Standards](https://app.notion.com/p/Coding-Standards-Best-Practices-674bc73857f94bdda112e0086a52ed56#18c568b385d780cb8119e25340d7028b), all variables and constants use `camelCase`. No exceptions, including exported constants and test fixtures.
 - **JS Docs on exported composables/hooks** — **suggestion:** add JSDoc comments to `useUserSignals`, `useLazySignals`, and equivalent hooks that are consumed across the app.
 - **Add comments on non-obvious side-effects** — **suggestion:** if a `useEffect` or hook call has a non-obvious reason for existing, add an inline comment explaining why.
 - **Conditional chains must be declarative and ordered** — prefer early-return guard clauses over nested conditions. Order: `isPending` → `!hasRequiredData` → happy path. Each branch should be independent, not rely on the negation of previous branches being already checked.
