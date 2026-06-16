@@ -112,8 +112,16 @@ Don't make extra API calls when the same data is already available from a call a
 ## Comment style
 
 - Label everything: use `**blocker:**`, `**suggestion:**`, or `**question:**` — exactly these labels, no others
-- **Be concise** — state the finding and the action. Do not narrate what the code does or explain what you found correct. Trust the author to understand with minimal context.
-- **Cite file:line, not descriptions** — write `processChatIntegrationEvent.ts:102`, not "the impersonation code in the Temporal activity". If the reference is self-evident from the label, omit it.
+- **Action-first imperative** — start with what to do: "inline `X` in `Y`", "drop test suite for `X`", "remove caching based on Z". Never start with the subject ("X is only used once...").
+- **Use "given" as the rationale connector** — not em-dash, not "which", not "because". Example: "inline `getMcpSparkHeaders` in `getTools` given this is only used once and doesn't encompass any complex logic."
+- **Two-paragraph structure for longer findings** — short action title on the first line, blank line, then the explanation. Example:
+  ```
+  **suggestion**: remove caching based on the mcp Client
+
+  The cache key update is unnecessary given we generate a brand new JWT for every Slack request (Check `processChatIntegrationEvent.ts:102`). So the cache never naturally collides between the two paths.
+  ```
+- **Cite file:line with "Check `path:line`"** — write `Check \`processChatIntegrationEvent.ts:102\``, not "the impersonation code in the activity". If the reference is self-evident, omit it.
+- **Name the thing being dropped** — "drop test suite for `getMcpSparkHeaders`" not "drop this suite".
 - When flagging an AC violation, quote the AC text directly
 - When flagging a coding standards violation, link the standard
 - Ask `**question:**` when you want to understand the rationale behind a decision — not to demand a change, but to flag something that needs explanation

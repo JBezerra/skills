@@ -19,7 +19,7 @@ Patterns JBezerra consistently flags on backend code (services, hooks, jobs, uti
 
 - **Co-location over shared utils** — if a helper is only used in one service, move it next to that service. Generic utils belong in shared files only when they're genuinely reusable across the codebase.
 - **Avoid over-abstraction** — inline simple database calls directly in the service so behavior is explicit. One-off wrappers that hide a single call are a net negative.
-- **Inline single-use functions with no complex logic** — **suggestion:** if a function is called in exactly one place and its body is trivial, inline it. Extracting it adds indirection with no reuse benefit.
+- **Inline single-use functions and constants with no complex logic** — **suggestion:** if a function or named constant is used in exactly one place and adds no semantic value, inline it. Extracting it adds indirection with no reuse benefit. Example: `MCP_CLIENT_HEADER = 'X-GovSpend-MCP-Client'` used only inside one function body should be inlined.
 - **Prefer Feathers service over middleware** — **question:** flag any new middleware that could instead be a standard Feathers service.
 - **Config belongs next to its usage, not in env vars** — **blocker:** moving non-secret config into `.env` is wrong; colocate it with the code that uses it.
 - **Consolidate auth methods in one service** — don't create a separate service for each auth mechanism; encapsulate all auth variants in the existing `feathers` service.
