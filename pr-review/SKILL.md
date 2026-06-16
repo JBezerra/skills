@@ -14,7 +14,7 @@ You do NOT post inline comments to GitHub. You output a structured report.
 1. **Parse the input** — accept a PR URL (`https://github.com/org/repo/pull/N`) or a bare PR number (assume the current repo from `git remote`).
 2. **Fetch the PR** — use `gh pr view` to get the title, body, and branch name. Use `gh pr diff` to get the full diff.
 3. **Find the Jira ticket** — look for a `GS-XXXX` pattern in two places: the branch name and the PR description. Either or both may contain it. Extract the ticket key and use the `mcp__Jira__getJiraIssue` tool to fetch the full ticket. This is mandatory — the ticket is the source of truth for what the PR is supposed to do, including acceptance criteria, scope decisions, and context the PR description may omit.
-4. **Read the actual files** — don't rely only on the diff. For any changed file where context matters (service logic, middleware, auth, config), read the current file from the repo. The diff shows what changed; the file shows what it means.
+4. **Read the actual files** — don't rely only on the diff. For any changed file where context matters (service logic, middleware, auth, config), read the current file from the repo. The diff shows what changed; the file shows what it means. For any added guard, conditional branch, or defensive layer: identify the assumption it's based on, find the files that would confirm or deny it, and read them before concluding whether the complexity is justified.
 5. **Apply the review principles below** — work through them in priority order, using the Jira ticket as the primary source for AC and intent.
 6. **Output the report** — use the exact structure defined at the end of this file.
 
@@ -42,7 +42,26 @@ Look for things that are broken, not just things that could be better:
 
 When flagging correctness issues, always include a reproduction path or the specific code that's wrong. Don't make the author guess what to check.
 
-### 3. Simplest implementation
+### 3. Fact-check the premise of added complexity
+
+When a PR adds conditional logic, a guard, an extra abstraction, or any code that handles a specific scenario — don't assume the scenario is real. Verify it.
+
+**Process:**
+1. Identify the assumption: what situation does this code guard against or prepare for?
+2. Find the files that determine whether that situation can actually occur.
+3. Read them. Only after confirming the premise holds should the complexity be accepted as justified.
+
+**Two questions to ask for every piece of added complexity:**
+1. Can the scenario this code guards against actually occur? Trace the call path to find out.
+2. Even if it can occur — is the consequence severe enough to justify the added maintenance burden?
+
+If either answer is no, flag it as a **suggestion** and cite the specific file:line that disproves the premise. This is what turns "this looks like over-engineering" into a defensible, specific finding.
+
+**Canonical example**: a PR adds `mcpClientName` to a cache key on the premise that Slack and web requests could share a JWT and collide in cache. Reading `processChatIntegrationEvent.ts:102` shows Slack always generates an impersonated JWT — structurally different from a web session token. The collision cannot happen. The premise was false; the cache key split was unnecessary.
+
+This is distinct from principle #4 (Simplest implementation): that asks whether code can be deleted without breaking anything. This principle asks whether the code's reason for existing is grounded in fact. Answer this first — then the simplicity argument follows naturally.
+
+### 4. Simplest implementation
 
 Ask: could this be less code? The rule is that every line of code is a liability — it has to be maintained, understood, and debugged. If code can be removed without losing correctness, it should be.
 
@@ -55,7 +74,7 @@ Flag:
 
 The question to ask: "if I deleted this, would anything break?" If the answer is no, it should be a suggestion to remove it.
 
-### 4. Completeness against the codebase contract
+### 5. Completeness against the codebase contract
 
 New code should follow the full pattern established by similar existing code. Missing pieces aren't just style issues — they create inconsistencies that cause bugs and confusion later.
 
@@ -63,7 +82,7 @@ When something is missing (a cache layer, an observability entry, an entitlement
 
 For spark-mcp specifically, see `references/spark-mcp.md` for the mandatory new-tool checklist.
 
-### 5. Consistency with established patterns
+### 6. Consistency with established patterns
 
 Cross-reference changed code against existing similar files:
 - If other search tools cache, this one should too
@@ -73,11 +92,11 @@ Cross-reference changed code against existing similar files:
 
 Don't invent new conventions when existing ones work.
 
-### 6. Code colocation
+### 7. Code colocation
 
 Logic should live where it is used and easily discovered. If a bypass, gate, or flag is only relevant in one specific middleware or handler, it belongs there — not threaded through as a parameter to a general-purpose function. Passing context through layers makes code harder to reason about and harder to find.
 
-### 7. Precision in language
+### 8. Precision in language
 
 Check docs, AI-facing instructions, and comments for:
 - Wrong terminology (e.g., claiming entitlements come from a field where they don't)
@@ -86,15 +105,15 @@ Check docs, AI-facing instructions, and comments for:
 
 These are usually **suggestions**, but become **blockers** when the inaccuracy directly affects runtime behavior or user-facing correctness.
 
-### 8. Non-team agreements
+### 9. Non-team agreements
 
 If `AGENTS.md`, `CLAUDE.md`, or similar files codify a practice that is clearly not a team-level agreement (unilateral preferences, TODOs, personal dev habits), flag it as a **suggestion** to remove.
 
-### 9. Naming accuracy
+### 10. Naming accuracy
 
 Env vars, function names, route names, and constants should accurately describe what they do. A name that misleads future readers into wrong assumptions is a liability.
 
-### 10. API/network efficiency
+### 11. API/network efficiency
 
 Don't make extra API calls when the same data is already available from a call already being made in the same flow. Redundant calls waste latency and make the code harder to follow.
 
