@@ -57,7 +57,11 @@ When a PR adds conditional logic, a guard, an extra abstraction, or any code tha
 
 If either answer is no, flag it as a **suggestion** and cite the specific file:line that disproves the premise. This is what turns "this looks like over-engineering" into a defensible, specific finding.
 
-**Canonical example**: a PR adds `mcpClientName` to a cache key on the premise that Slack and web requests could share a JWT and collide in cache. Reading `processChatIntegrationEvent.ts:102` shows Slack always generates an impersonated JWT — structurally different from a web session token. The collision cannot happen. The premise was false; the cache key split was unnecessary.
+**Applies to runtime guards AND design decisions.** The premise check is not only for "can this scenario occur?" — it also applies to architectural choices. Ask: is this the right layer to be making this decision? A caching layer that inspects payload content to decide TTL is wrong not because the scenario is impossible, but because TTL is a caller responsibility — the cache layer shouldn't know or care what's in the payload. When you spot a suspicious abstraction or a layer doing something it shouldn't, ask whether the simpler design would put that responsibility somewhere else entirely, making the complex code unnecessary.
+
+**Canonical examples**:
+- A PR adds `mcpClientName` to a cache key on the premise that Slack and web requests could share a JWT. Reading `processChatIntegrationEvent.ts:102` shows Slack always uses an impersonated JWT — the collision cannot happen. Premise false → cache key split unnecessary.
+- A `_set_cache` method inspects payload content to decide the TTL. The premise is that the cache layer should own this decision. But TTL belongs at the call site — callers know what they're caching and should pass the right TTL. Premise wrong → the inspection logic and the expiry detection helper it spawns are both unnecessary.
 
 This is distinct from principle #4 (Simplest implementation): that asks whether code can be deleted without breaking anything. This principle asks whether the code's reason for existing is grounded in fact. Answer this first — then the simplicity argument follows naturally.
 
@@ -71,6 +75,7 @@ Flag:
 - Helper methods or abstractions that exist for a single call site and add no reuse value
 - Extra API calls when the same data is already in scope from a call already being made
 - Dead or deprecated code left in place (routes, tools, constants, endpoints that no longer exist)
+- Cross-module imports that create coupling where a local constant or the receiving module's own constant would do — an import from a sibling module signals that responsibility may be in the wrong place
 
 The question to ask: "if I deleted this, would anything break?" If the answer is no, it should be a suggestion to remove it.
 
