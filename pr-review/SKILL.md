@@ -30,6 +30,8 @@ Read the PR description and any linked ticket. Identify the acceptance criteria.
 
 This is the first thing to check. An implementation that doesn't match its spec is wrong regardless of code quality.
 
+**Example**: AC says "send data to the user metrics dashboard as 'Slack App'". The dashboard groups by `agent_name`. Verify `session_started_event` is called with `agent_name="Slack App"` on the initialize path — not `clientInfo.name`, which would produce whatever the MCP client sends.
+
 ### 2. Correctness
 
 Look for things that are broken, not just things that could be better:
@@ -41,6 +43,8 @@ Look for things that are broken, not just things that could be better:
 - **Regressions**: the PR inadvertently removes, shadows, or changes behavior of existing functionality. Check `__init__.py` files, config registries, route tables. This is a hard blocker — new code must not break old code.
 
 When flagging correctness issues, always include a reproduction path or the specific code that's wrong. Don't make the author guess what to check.
+
+**Example**: a PR adds a new `on_initialize` path that calls `context.message.params.clientInfo.name`. Some MCP clients send `params=None` on initialize — `None.clientInfo` raises `AttributeError`. The original code had a `try/except` guard; the new path doesn't. Mentally running a stdio connection through the new code surfaces the crash before it hits production.
 
 ### 3. Fact-check the premise of added complexity
 
@@ -79,6 +83,8 @@ Flag:
 
 The question to ask: "if I deleted this, would anything break?" If the answer is no, it should be a suggestion to remove it.
 
+**Example**: `getMcpSparkHeaders` is extracted as a named function but called in exactly one place (`getTools`). Its body is 3 lines with no branching. Inlining it removes a layer of indirection with no cost. Same for `ALLOWED_MCP_CLIENT_NAMES = frozenset({'Slack App'})` — one value, one check, no realistic future addition pending. There's no need to whitelist the client names; drop the check entirely.
+
 ### 5. Completeness against the codebase contract
 
 New code should follow the full pattern established by similar existing code. Missing pieces aren't just style issues — they create inconsistencies that cause bugs and confusion later.
@@ -86,6 +92,8 @@ New code should follow the full pattern established by similar existing code. Mi
 When something is missing (a cache layer, an observability entry, an entitlement gate), compare explicitly against the existing file or tool that has it. Name the file.
 
 For spark-mcp specifically, see `references/spark-mcp.md` for the mandatory new-tool checklist.
+
+**Example**: a new `search_meetings` tool adds `tool.py` but no `routes.py`. Every existing search tool under `spark_mcp/features/` has a `routes.py` for REST parity. Missing it means the tool is only reachable via MCP, silently breaking API key clients.
 
 ### 6. Consistency with established patterns
 
@@ -97,9 +105,13 @@ Cross-reference changed code against existing similar files:
 
 Don't invent new conventions when existing ones work.
 
+**Example**: every search tool emits observability events through `execute_tool_with_guards`. A new tool calls the upstream API directly, bypassing the guard. The events are missing, the pattern is broken, and the tool now has no observability — even though the existing pattern would have handled it for free.
+
 ### 7. Code colocation
 
 Logic should live where it is used and easily discovered. If a bypass, gate, or flag is only relevant in one specific middleware or handler, it belongs there — not threaded through as a parameter to a general-purpose function. Passing context through layers makes code harder to reason about and harder to find.
+
+**Example**: a `gate_applies` boolean added to `filter_tools_by_permissions` to skip the gate for embedded users. The bypass condition is only relevant in the entitlement middleware that calls the function — it belongs there as a guard clause, not as a parameter threading through a generic filter that has no business knowing about embedded access.
 
 ### 8. Precision in language
 
@@ -110,6 +122,8 @@ Check docs, AI-facing instructions, and comments for:
 
 These are usually **suggestions**, but become **blockers** when the inaccuracy directly affects runtime behavior or user-facing correctness.
 
+**Example**: `instructions.md` for a search tool says "you can retrieve up to 100 results per page" but the implementation caps at 20. The agent will construct queries expecting 100 results and misinterpret truncated responses as complete ones — a silent, hard-to-debug failure.
+
 ### 9. Non-team agreements
 
 If `AGENTS.md`, `CLAUDE.md`, or similar files codify a practice that is clearly not a team-level agreement (unilateral preferences, TODOs, personal dev habits), flag it as a **suggestion** to remove.
@@ -118,9 +132,13 @@ If `AGENTS.md`, `CLAUDE.md`, or similar files codify a practice that is clearly 
 
 Env vars, function names, route names, and constants should accurately describe what they do. A name that misleads future readers into wrong assumptions is a liability.
 
+**Example**: `SLACK_APP_MCP_CLIENT_NAME` — the name implies it is the Slack app's MCP client name, but it's just a string constant `'Slack App'` used as a header value. Its scope and meaning are local; extracting it as a named constant signals more reuse than actually exists. If a constant is only used once and its name doesn't add clarity beyond the literal value, the name is noise.
+
 ### 11. API/network efficiency
 
 Don't make extra API calls when the same data is already available from a call already being made in the same flow. Redundant calls waste latency and make the code harder to follow.
+
+**Example**: a tool calls `get_user_profile` to extract `org_id`, then makes a second call to `get_org` to fetch permissions. If the `get_user_profile` response already includes `org.permissions` (merged by the API's `mergeOrgPermissions` hook), the second call fetches data that's already in scope.
 
 ---
 
