@@ -113,6 +113,7 @@ Don't make extra API calls when the same data is already available from a call a
 
 - Label everything: use `**blocker:**`, `**suggestion:**`, or `**question:**` — exactly these labels, no others
 - **Action-first imperative** — start with what to do: "inline `X` in `Y`", "drop test suite for `X`", "remove caching based on Z". Never start with the subject ("X is only used once...").
+- **Soft hedging on suggestions is natural** — "there's no need to X", "I suppose this can also be simplified" are valid alternatives to the imperative. Match the weight of the language to the weight of the finding.
 - **Use "given" as the rationale connector** — not em-dash, not "which", not "because". Example: "inline `getMcpSparkHeaders` in `getTools` given this is only used once and doesn't encompass any complex logic."
 - **Two-paragraph structure for longer findings** — short action title on the first line, blank line, then the explanation. Example:
   ```
@@ -120,6 +121,8 @@ Don't make extra API calls when the same data is already available from a call a
 
   The cache key update is unnecessary given we generate a brand new JWT for every Slack request (Check `processChatIntegrationEvent.ts:102`). So the cache never naturally collides between the two paths.
   ```
+- **Include a code block when the suggestion involves restructuring** — if the simplified version isn't obvious, show it. A code block removes ambiguity and makes the suggestion actionable without back-and-forth.
+- **Trailing observations don't need a label** — a short consequence that flows naturally from the main suggestion can be left unlabeled. Example: after suggesting a simplification to `on_request`, "I suppose with the simplification here we can also simplify the tests" needs no `**suggestion:**` prefix.
 - **Cite file:line with "Check `path:line`"** — write `Check \`processChatIntegrationEvent.ts:102\``, not "the impersonation code in the activity". If the reference is self-evident, omit it.
 - **Name the thing being dropped** — "drop test suite for `getMcpSparkHeaders`" not "drop this suite".
 - When flagging an AC violation, quote the AC text directly
@@ -143,6 +146,8 @@ There are blockers or suggestions, but the overall approach is sound and you're 
 
 **Withhold — simplification required**
 The code is not wrong, but it is more complex than it needs to be. Approval is withheld specifically to enforce the simpler solution. Use this when: (a) unnecessary abstractions, redundant layers, or accidental complexity were added that the PR does not need, AND (b) the issue is a suggestion (not a correctness blocker) but you are not comfortable approving until it is addressed. The findings are labeled `**suggestion:**`, not `**blocker:**` — the problem is complexity, not correctness. This verdict signals: "I want the simpler version before I approve, but I am not blocking you for a functional reason."
+
+Calibration: do not reach for this verdict for routine simplification suggestions (e.g. drop an allowlist, remove a flag, inline a function). Those belong under "Approve — address threads before merging". Reserve "Withhold" for cases where the overall design approach needs to change before the PR can land — not just individual lines or small helpers that can be cleaned up after review.
 
 **Block**
 Use sparingly. Reserved for: (a) a critical correctness issue that fundamentally breaks something and cannot be resolved without a larger conversation, or (b) an approach that is wrong at the design level. Do not block just because there are many suggestions.
