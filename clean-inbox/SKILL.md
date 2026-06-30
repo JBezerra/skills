@@ -31,7 +31,7 @@ every thread ID + its metadata (sender, subject, snippet, labelIds).
 
 ## Step 2 — Classify each thread
 
-For each thread, decide: **keep unread** or **mark as read**.
+For each thread, decide: **keep unread**, **mark as read**, or **unknown**.
 
 ### KEEP UNREAD — things the user genuinely cares about
 
@@ -39,29 +39,29 @@ For each thread, decide: **keep unread** or **mark as read**.
    the snippet or subject contains phrases like "requested your review".
    Someone is specifically asking this user to review their code.
 
-3. **Human comments on GitHub PRs** — `notifications@github.com` where
+2. **Human comments on GitHub PRs** — `notifications@github.com` where
    a real person (not a bot) left a comment. Signs it's human:
    snippet has `@username commented` or `@username left a comment` and
    the username does NOT contain `[bot]` and is NOT `decrapifier`.
    Signs it's a bot or noise: `[bot]`, `decrapifier`, `pushed N commit`,
    `approved this pull request`, `Merged #`.
 
-4. **Jira direct mentions** — `jira@govspend.atlassian.net` where the
+3. **Jira direct mentions** — `jira@govspend.atlassian.net` where the
    subject contains `"mentioned you on"`. Someone is tagging the user
    specifically in a conversation thread.
 
-5. **Recruiter outreach** — emails from outside `govspend.com` that are
+4. **Recruiter outreach** — emails from outside `govspend.com` that are
    clearly reaching out about job opportunities. Signals: sender domain
    is not govspend.com, words like "opportunity", "role", "position",
    "your background", "your profile", "Senior", "Engineer" in a
    cold-outreach tone. Use judgment — a genuine business partner email
    is not a recruiter.
 
-6. **Notion digests** — sender is `notify@mail.notion.so` or
+5. **Notion digests** — sender is `notify@mail.notion.so` or
    `team@mail.notion.so`. These are workspace notifications the user
    wants to see.
 
-7. **Forwarded internal threads** — subject starts with `Fwd:` AND
+6. **Forwarded internal threads** — subject starts with `Fwd:` AND
    sender is `@govspend.com`. A colleague forwarding something usually
    means they want the user's input or awareness.
 
@@ -119,10 +119,36 @@ These are patterns that should be silently cleaned up:
 
 ---
 
+## Step 2b — Ask about unknown categories
+
+After classifying all threads, collect any that didn't clearly match a
+known keep or noise rule. Group them by recurring pattern: same sender
+domain, same subject prefix, same type of service notification. Each
+distinct pattern is a candidate "new category".
+
+**Before doing any marking**, present all unknown categories to the user
+as yes/no questions — batch them all at once rather than one at a time.
+
+Frame each question around what the category actually is, not the raw
+sender. Good example:
+> "I found emails from Datadog about alert thresholds. Do you want to
+> keep those unread?"
+
+Once the user answers:
+- **Yes** → treat that category as KEEP UNREAD for this run.
+- **No** → treat it as noise and include those threads in the cleanup.
+
+Only ask about patterns with at least 2 threads, or 1 thread if it's
+clearly a distinct type of service or sender. Don't ask about one-off
+emails that are obviously personal or unique — leave those unread.
+
+---
+
 ## Step 3 — Mark noise as read
 
-For every thread classified as noise, call `unlabel_thread` with
-`labelIds: ["UNREAD"]`. Do all calls in parallel to be fast.
+For every thread classified as noise (including any new categories the
+user said no to), call `unlabel_thread` with `labelIds: ["UNREAD"]`.
+Do all calls in parallel to be fast.
 
 ---
 
