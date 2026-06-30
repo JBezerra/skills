@@ -135,7 +135,14 @@ sender. Good example:
 > keep those unread?"
 
 Once the user answers:
-- **Yes** → treat that category as KEEP UNREAD for this run.
+- **Yes** → treat that category as KEEP UNREAD for this run, **and
+  permanently add it to the KEEP UNREAD list in this SKILL.md file**
+  under `## Step 2 — Classify each thread`. Write a concise bullet
+  describing the pattern (sender, subject signal, or content signal)
+  the same way the existing entries are written. The skill file lives
+  at `~/.claude/skills/clean-inbox/SKILL.md` — edit it directly with
+  the Edit tool so future runs know about this preference without
+  asking again.
 - **No** → treat it as noise and include those threads in the cleanup.
 
 Only ask about patterns with at least 2 threads, or 1 thread if it's
