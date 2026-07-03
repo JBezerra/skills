@@ -13,19 +13,17 @@ You are turning a request, a bug report, or a decision already discussed into a 
 
 2. **Take a brief look at the codebase.** Enough to sanity-check that the request is coherent and to catch an obviously wrong assumption, a quick grep or a couple of file reads. This is not a research pass: don't spawn subagents, don't trace the full call graph, don't read every related file. If the request needs deep investigation to even understand, say so and ask the user how deep to go rather than quietly doing it yourself.
 
-3. **Search Jira before writing anything new.** Use the Jira MCP tools to check whether a ticket already covers this request (search by keywords, or by component if the project has one). Creating a duplicate is worse than asking "does GS-XXXX already cover this?" first.
+3. **Ask clarifying questions.** Whenever the request leaves a gap, scope, acceptance criteria, what "done" looks like, whether an edge case is in or out, ask rather than filling it in silently. Use `AskUserQuestion` when there's a concrete set of options to choose between; ask in plain text when it's more open-ended. A ticket built on a guessed assumption is expensive to unwind later once someone starts building against it.
 
-4. **Ask clarifying questions.** Whenever the request leaves a gap, scope, acceptance criteria, what "done" looks like, whether an edge case is in or out, ask rather than filling it in silently. Use `AskUserQuestion` when there's a concrete set of options to choose between; ask in plain text when it's more open-ended. A ticket built on a guessed assumption is expensive to unwind later once someone starts building against it.
+4. **Resolve the parent epic.** See "Choosing a parent" below. Never leave this blank or guess silently.
 
-5. **Resolve the parent epic.** See "Choosing a parent" below. Never leave this blank or guess silently.
+5. **Resolve the owning team.** See "Choosing a team" below. Same rule: ask rather than guess.
 
-6. **Resolve the owning team.** See "Choosing a team" below. Same rule: ask rather than guess.
+6. **Confirm your assumptions out loud before drafting.** If you had to infer anything to fill a gap (e.g. "I'm assuming this only applies to admins, since that's how the similar feature works"), say so explicitly and let the user correct you. Don't fold silent inferences into a draft that reads as settled fact.
 
-7. **Confirm your assumptions out loud before drafting.** If you had to infer anything to fill a gap (e.g. "I'm assuming this only applies to admins, since that's how the similar feature works"), say so explicitly and let the user correct you. Don't fold silent inferences into a draft that reads as settled fact.
+7. **Present the full draft for confirmation.** Title, user story, description, requirements, acceptance criteria, chosen parent, chosen team, all together, before calling any Jira write tool. Wait for explicit confirmation. This applies to both new tickets and edits to existing ones, if you're updating a ticket, show what's changing, not just the final state.
 
-8. **Present the full draft for confirmation.** Title, user story, description, requirements, acceptance criteria, chosen parent, chosen team, all together, before calling any Jira write tool. Wait for explicit confirmation. This applies to both new tickets and edits to existing ones, if you're updating a ticket, show what's changing, not just the final state.
-
-9. **Write it.** Create or edit via the Jira MCP tools once confirmed.
+8. **Write it.** Create or edit via the Jira MCP tools once confirmed.
 
 ## Ticket format
 
@@ -52,6 +50,8 @@ Numbered steps a reviewer could actually execute to verify the work is done. Cov
 ## Choosing a parent
 
 Before creating a ticket, find candidate parent epics via the Jira MCP tools (search or JQL against the project). If the user already named a parent, confirm it exists and is the right fit rather than trusting the key blindly, projects drift and epics get renamed. If the user is unsure, list the live candidates you found (key, title, status) and ask them to pick, don't default to "no parent" just because it's ambiguous, an unparented ticket is easy to lose track of.
+
+If you're updating a ticket that already has a parent, fetch that parent epic and read it. It's free context: the epic's description and sibling tickets tell you what the surrounding work is trying to accomplish, and often answer scope or terminology questions you'd otherwise have to ask the user about. Use it to inform the update rather than re-deriving the parent from scratch or ignoring it.
 
 ## Choosing a team
 
