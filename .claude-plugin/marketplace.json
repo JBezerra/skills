@@ -1,0 +1,30 @@
+{
+  "name": "skills",
+  "owner": {
+    "name": "Jose Bezerra"
+  },
+  "metadata": {
+    "description": "Jose Bezerra's personal Claude Code skills",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "pr-review",
+      "description": "Code review a pull request",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./pr-review"
+      ]
+    },
+    {
+      "name": "clean-inbox",
+      "description": "Cleans up the user's Gmail inbox by reading unread emails and marking unimportant ones as read",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./clean-inbox"
+      ]
+    }
+  ]
+}
