@@ -25,6 +25,15 @@
       "skills": [
         "./clean-inbox"
       ]
+    },
+    {
+      "name": "jira-ticket",
+      "description": "Create or update Jira tickets using the Jira MCP, formatted as clean product-facing artifacts",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./jira-ticket"
+      ]
     }
   ]
 }
