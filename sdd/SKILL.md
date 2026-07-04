@@ -1,6 +1,6 @@
 ---
-name: spec
-description: Turn a Jira ticket, an RFC, and/or the user's own direction into a reviewed plan (via the prd skill and Claude's Plan Mode), then execute it one self-contained task at a time, pausing for review before every commit. Use this skill whenever the user wants to start working on a ticket, says "let's work on GS-XXXX", "spec this out", "let's plan this feature", "/spec", pastes an RFC or design doc and wants it turned into implementation work, or asks to break a ticket down into tasks. This is the entry point for any nontrivial piece of work, not a research tool and not a coding tool on its own, it produces the plan and then drives the implement-review-commit loop across the whole PRD.
+name: sdd
+description: Turn a Jira ticket, an RFC, and/or the user's own direction into a reviewed plan (via the prd skill and Claude's Plan Mode), then execute it one self-contained task at a time, pausing for review before every commit. Use this skill whenever the user wants to start working on a ticket, says "let's work on GS-XXXX", "spec this out", "let's plan this feature", "/sdd", pastes an RFC or design doc and wants it turned into implementation work, or asks to break a ticket down into tasks. This is the entry point for any nontrivial piece of work, not a research tool and not a coding tool on its own, it produces the plan and then drives the implement-review-commit loop across the whole PRD.
 ---
 
 # Spec

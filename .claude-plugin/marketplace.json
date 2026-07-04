@@ -17,7 +17,7 @@
         "./pr-review",
         "./clean-inbox",
         "./jira-ticket",
-        "./spec",
+        "./sdd",
         "./daily-brain"
       ]
     }
