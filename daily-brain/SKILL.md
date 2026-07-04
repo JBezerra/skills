@@ -28,6 +28,61 @@ reason about locally — no need to redact or split out personal content.
 
 ---
 
+## Context: how the user actually works
+
+This comes from a quarterly self-review the user did (Jan-Jun), separate
+from `📍.md` itself. It's the psychological lens behind the Kanban — use
+it to make Stale items and Reflection sharper, not as new sections to
+report on literally.
+
+- **Two root systems.** Pomodoro (interrupting work-pressure buildup
+  every ~90 min, before it peaks into stress-driven impulses) is the
+  system that anchors *normal* days. The quinzenal review is the system
+  that anchors *atypical* weeks (travel, chaos) — it's the one system
+  that has never failed him in 3+ months. When work bleeds into
+  everything else, the root cause is usually one of these two slipping,
+  not a lack of willpower anywhere else.
+
+- **Cascade of abandonment.** A legitimate pause (one rest day) turns
+  into a justified absence (next day) turns into inertia (day after) —
+  3 days and a system is dead. The fix that has worked for him is
+  committing to specific times *before* the week starts (Sunday
+  planning: which days for Jiu-Jitsu, what to advance on Mergi, what to
+  write about — already mirrored in the `Resoluções Semanal` block).
+  When flagging a stale item, consider whether it looks like day 1 of
+  this cascade — worth a gentler nudge — versus something that's been
+  dead for a week.
+
+- **Sleep is the deepest root cause.** Wake time affects the whole
+  morning routine (meditation, reading, cardio); no fixed bedtime means
+  wake time is at the mercy of the night before. He deliberately does
+  **not** want this turned into a hard resolution/metric — it's a
+  supporting condition, not a goal to chase. Don't propose adding it as
+  a tracked item; just weigh it in when other mornings-based items
+  (reading, meditation, cardio) look inconsistent.
+
+- **Weight goal:** currently working toward 80kg via daily-ish HIIT
+  cardio (treadmill sprints) plus Jiu-Jitsu 3-4x/week, tracked with a Mi
+  Band. If cardio/weigh-in mentions show up in the diff, that's worth
+  surfacing in Progress; if they're absent for several days where they'd
+  normally appear, that's a legitimate stale/reflection candidate.
+
+- **Career:** actively applying to Staff Engineer roles externally
+  (alongside the day job) as a deliberate, planned move — not something
+  to read as disengagement from GovSpend/AIP work. Track application
+  activity and follow-ups the same way other Work items are tracked.
+
+- **Reactivity is the core psychological theme**, not just a
+  productivity gap. He's explicitly working against being destabilized
+  by other people and against ruminating/adding imagined suffering to
+  raw events. He is harsh with himself by default — reviews skew toward
+  what went wrong, rarely pausing to register what went well as
+  something enjoyed rather than just completed. In Reflection, it's
+  worth occasionally asking him to savor something that actually went
+  well, not only interrogating gaps.
+
+---
+
 ## Step 1 — Read the current file and find yesterday's snapshot
 
 Read `~/source/@ai/📍.md`.
@@ -82,6 +137,13 @@ and ask them back directly as pointed questions — not generic journaling
 prompts, but grounded in what actually happened this week. If it's
 Monday, lean into this section more since that's when the weekly
 resolution block is meant to be reviewed.
+
+Use the "how the user actually works" context above to sharpen this:
+watch for early-cascade signs (day 1-2 of a system slipping) rather than
+only flagging things once they're clearly dead, and don't frame every
+gap as a discipline failure — if something genuinely good happened
+(a workout, a good Mergi session, real time with Thata/Rose), ask him to
+say more about it rather than immediately pivoting to what's missing.
 
 ### 5. Suggested cleanup (optional, light-touch)
 If something in Backlog/This Week looks actually done based on the Done
