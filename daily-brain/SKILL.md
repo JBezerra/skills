@@ -83,7 +83,7 @@ report on literally.
 
 ---
 
-## Step 1 — Read the current file, the run log, and find yesterday's snapshot
+## Step 1 — Read the current file, prior context, and find yesterday's snapshot
 
 Read `~/source/@ai/📍.md`.
 
@@ -95,6 +95,17 @@ run wasn't sure about, judgment calls it made and why, patterns it was
 tracking across multiple days, or corrections ("the user clarified X,
 don't flag it as stale again"). Let it inform Step 2, especially Stale
 items and Reflection.
+
+List `~/source/@ai/daily/` and read the last 7 days of analysis files
+(`YYYY-MM-DD-analysis.md`) that exist there, oldest to newest. This is
+the user-facing output of past runs — use it, alongside `log.txt`, as
+context for today's run: don't repeat a reflection question that was
+already asked and answered, notice when something flagged as stale
+earlier in the week finally moved (call that out explicitly, it's a real
+win), and let multi-day threads (e.g. a stretch of low Mergi activity, a
+recurring stress pattern) build across the week instead of resetting
+each day. If fewer than 7 exist, use whatever is there — don't treat a
+short history as an error.
 
 List `~/source/@ai/snapshots/`. Snapshots are named `YYYY-MM-DD.md`. Find
 the most recent snapshot strictly before today's date.
