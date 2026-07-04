@@ -34,6 +34,15 @@
       "skills": [
         "./jira-ticket"
       ]
+    },
+    {
+      "name": "spec",
+      "description": "Turn a ticket/RFC into a reviewed plan via prd and Plan Mode, then execute it one task at a time with review before every commit",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./spec"
+      ]
     }
   ]
 }
