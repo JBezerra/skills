@@ -53,7 +53,9 @@ Use `ExitPlanMode` to hand the plan to the user. Do not proceed to implementatio
 
 ## Phase 7: Execute, one task at a time
 
-Once the plan is approved, the default loop for each task is:
+Once the plan is approved, before the first task starts, check that the working tree is on the right branch. Run `git branch --show-current` (or equivalent) and compare it against the ticket key: the expected pattern is `GS-XXXX/name-of-branch`. If the current branch doesn't match (e.g. still on `develop` or on an unrelated branch), create and check out the correctly named branch before writing any code, don't implement on top of the wrong branch and sort it out later. If there's no ticket key to derive the name from, ask the user what the branch should be called rather than guessing.
+
+Once the loop for each task begins:
 
 1. **Announce the task.** A short preamble naming which task you're starting and its acceptance criteria, before touching any code, so the user always knows what's coming.
 2. **Implement it fully, but do not commit.** Write the code, run whatever local checks the repo's conventions call for (build, lint, tests), get it to a state you'd consider done against the task's AC. Stop there. Do not create a git commit and do not move on to the next task.
