@@ -96,7 +96,7 @@ tracking across multiple days, or corrections ("the user clarified X,
 don't flag it as stale again"). Let it inform Step 2, especially Stale
 items and Reflection.
 
-List `~/source/@ai/daily/` and read the last 7 days of analysis files
+List `~/source/@ai/analysis/` and read the last 7 days of analysis files
 (`YYYY-MM-DD-analysis.md`) that exist there, oldest to newest. This is
 the user-facing output of past runs — use it, alongside `log.txt`, as
 context for today's run: don't repeat a reflection question that was
@@ -176,7 +176,7 @@ as "want me to remove/move X?" This skill never edits `📍.md` directly.
 
 ## Step 3 — Write the analysis file
 
-Write the report to `~/source/@ai/daily/YYYY-MM-DD-analysis.md` (today's
+Write the report to `~/source/@ai/analysis/YYYY-MM-DD-analysis.md` (today's
 date). Use plain markdown, the section headers above, tight bullets. This
 is a file the user skims in under a minute, not a long essay.
 
