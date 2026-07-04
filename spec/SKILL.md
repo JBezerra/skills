@@ -53,7 +53,7 @@ Use `ExitPlanMode` to hand the plan to the user. Do not proceed to implementatio
 
 ## Phase 7: Execute, one task at a time
 
-Once the plan is approved, before the first task starts, check that the working tree is on the right branch. Run `git branch --show-current` (or equivalent) and compare it against the ticket key: the expected pattern is `GS-XXXX/name-of-branch`. If the current branch doesn't match (e.g. still on `develop` or on an unrelated branch), create and check out the correctly named branch before writing any code, don't implement on top of the wrong branch and sort it out later. If there's no ticket key to derive the name from, ask the user what the branch should be called rather than guessing.
+Once the plan is approved, before the first task starts, check that the working tree is on the right branch. Run `git branch --show-current` (or equivalent) and compare it against the ticket key: the expected pattern is `GS-XXXX/name-of-branch`. If the current branch doesn't match (e.g. still on `develop` or on an unrelated branch), create it off `develop`: check out `develop`, pull to make sure it's up to date with its remote, then branch off it with the correctly named branch, before writing any code, don't implement on top of the wrong branch and sort it out later. If there's no ticket key to derive the name from, ask the user what the branch should be called rather than guessing.
 
 Once the loop for each task begins:
 
