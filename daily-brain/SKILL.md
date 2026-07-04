@@ -20,6 +20,15 @@ short daily report that blends accountability tracking, idea surfacing,
 and reflective coaching — the way a good 1:1 partner would look at this
 file with the user.
 
+**This is a report the user actually reads every morning, not a
+transcript of your reasoning.** Default to too short rather than too
+long. Cut connective/hedging phrases entirely — "worth noting", "it's
+worth", "this represents", "what stands out is" — just state the fact.
+One line per bullet. No paragraphs unless a single idea genuinely needs
+2 sentences, and even then, 2 is the ceiling. If a section would just
+restate something from yesterday's analysis with no new information,
+drop it — don't re-explain context the user already read once.
+
 The file is the user's external brain: work tasks (GovSpend/AIP), a side
 project (Mergi), and personal/family notes, organized into a `Done` log,
 a `Kanban` (Today / Tomorrow / This Week / Backlog), and a `Resoluções
@@ -83,17 +92,40 @@ report on literally.
 
 ---
 
-## Step 1 — Read the current file, prior context, and find yesterday's snapshot
+## Step 1 — Determine today's date and day of week
+
+Run `date +%Y-%m-%d` and `date +%A` via Bash first, before reading
+anything else. Don't infer the date from ambient context — get it
+explicitly, since this skill also runs headlessly via cron where that
+matters.
+
+The user does not work weekends. This changes both what to say and how
+hard to push:
+
+- **Saturday/Sunday:** Don't flag GovSpend/AIP work tasks in Today/
+  Tomorrow as stale or overdue just because they weren't touched — that's
+  expected, not a gap. Personal/Mergi/health items still count normally.
+  Next actions (Step 3) should be personal/Mergi-only on weekends, not
+  "catch up on work."
+- **Monday:** The most recent Done-log entries span the weekend gap —
+  don't treat Friday→Monday as a stale streak. This is also when
+  `Resoluções Semanal` is meant to be reviewed, so lean into Reflection
+  more than other days.
+- **Tue-Fri:** Normal rules apply.
+
+---
+
+## Step 2 — Read the current file, prior context, and find yesterday's snapshot
 
 Read `~/source/@cron/📍.md`.
 
 Read `~/source/@cron/log.txt` if it exists — this is a running, agent-facing
-log written by past runs of this skill (see Step 6). It is not something
+log written by past runs of this skill (see Step 7). It is not something
 the user reads day to day; it's how one run tells the next one what it
 learned. Treat anything in it as working context: open questions a past
 run wasn't sure about, judgment calls it made and why, patterns it was
 tracking across multiple days, or corrections ("the user clarified X,
-don't flag it as stale again"). Let it inform Step 2, especially Stale
+don't flag it as stale again"). Let it inform Step 3, especially Stale
 items and Reflection.
 
 List `~/source/@cron/analysis/` and read the last 7 days of analysis files
@@ -118,71 +150,71 @@ the most recent snapshot strictly before today's date.
 
 - **If a snapshot exists**: diff the current file content against it
   (a simple text diff is enough — `diff -u` via Bash, or reason over the
-  two texts directly). Use the diff as the primary input for Step 2.
+  two texts directly). Use the diff as the primary input for Step 3.
 
 Also list up to 7 days of snapshots (not just yesterday's) — these feed
-the staleness check in Step 2.
+the staleness check in Step 3.
 
 ---
 
-## Step 2 — Build the analysis
+## Step 3 — Build the analysis
 
-Produce a report with these sections, in this order. Skip a section
-entirely if there's nothing worth saying in it — don't pad with "nothing
-to report here."
+**Hard budget: the whole report should read in under a minute.** Target
+150-250 words total across all sections combined. Every section below is
+a bullet list, not prose. One line per bullet. If a section has nothing
+new to say, omit the heading entirely — don't write "nothing to report."
+
+Produce these sections, in this order:
 
 ### 1. Progress
-What moved from unchecked to checked (`- [ ]` → `- [x]`) since yesterday,
-across `Done` and the Kanban. Group by Work / Mergi / Pessoal if there's
-enough to group. Be concrete — name the actual task, not "some tasks."
+What moved from unchecked to checked (`- [ ]` → `- [x]`) since yesterday.
+Name the actual task. Max 5 bullets — if there are more, group by
+Work/Mergi/Pessoal instead of listing all of them.
 
-### 2. New ideas & intentions
-New `|>` thought entries, new bullets under Tomorrow/This Week/Backlog,
-or new freeform notes in the `1:1 Notes` section. For each, note if it
-connects to something already in the file (an existing idea, a related
-task) — the point is catching ideas that echo each other so nothing gets
-lost as a one-off thought.
+### 2. Next actions
+**The most important section.** A ranked list of 3-5 concrete things to
+do next, ordered by priority. Not a restatement of everything in Today/
+Tomorrow — a genuine cut: given what moved, what's stale, what's new,
+and what day of the week it is, what should the user actually act on
+next? Each bullet is one action, specific enough to start immediately
+(not "work on Mergi" but "fix the split-diff syntax highlight bug").
+Weekday-aware: on weekends this list is personal/Mergi-only, never
+GovSpend/AIP work.
 
-### 3. Stale items
-Using up to 7 days of snapshots, find checklist items in Today/Tomorrow
-that appear **unchanged and still unchecked** across multiple snapshots
-(3+ days is a reasonable bar, but use judgment — a task tagged ASAP that's
-stale is worth flagging even at 2 days). List them explicitly. This is
-the section most likely to catch things quietly rotting.
+### 3. New ideas
+New `|>` thoughts, new bullets under Tomorrow/This Week/Backlog, or new
+freeform notes in `1:1 Notes`. One line each. Only note a connection to
+an existing idea if it's genuinely non-obvious — don't force it.
 
-### 4. Reflection
-Pick 1-2 of the `Resoluções Semanal` questions (Jiu-Jitsu, Mergi
-progress, writing, meals) or a career/balance angle from the diff itself,
-and ask them back directly as pointed questions — not generic journaling
-prompts, but grounded in what actually happened this week. If it's
-Monday, lean into this section more since that's when the weekly
-resolution block is meant to be reviewed.
+### 4. Stale
+Checklist items in Today/Tomorrow unchanged and unchecked across 3+
+snapshots (2 is enough if tagged urgent). One line each, name the item
+and how many days. Skip GovSpend/AIP items here on Mon if the gap is
+just the weekend.
 
-Use the "how the user actually works" context above to sharpen this:
-watch for early-cascade signs (day 1-2 of a system slipping) rather than
-only flagging things once they're clearly dead, and don't frame every
-gap as a discipline failure — if something genuinely good happened
-(a workout, a good Mergi session, real time with Thata/Rose), ask him to
-say more about it rather than immediately pivoting to what's missing.
+### 5. Reflection
+**One question, not a menu.** Pick the single sharpest angle from
+`Resoluções Semanal`, the diff, or something worth savoring rather than
+fixing (see the "how the user actually works" context above). Monday
+gets more room here since that's the weekly reset; other days, one
+short question is enough — sometimes none if nothing stands out.
 
-### 5. Suggested cleanup (optional, light-touch)
-If something in Backlog/This Week looks actually done based on the Done
-log or diff, or a Kanban section looks like it needs to roll over (e.g.
-`Done` week log ends and a new week should start), suggest it as a
-specific, actionable edit — but do not make the edit yourself. Phrase it
-as "want me to remove/move X?" This skill never edits `📍.md` directly.
+### 6. Cleanup (only if genuinely warranted)
+One-line suggestions when something in Backlog/This Week looks done, or
+a `Done` week block needs archiving. Phrase as "remove/move X?" — never
+edit `📍.md` directly.
 
 ---
 
-## Step 3 — Write the analysis file
+## Step 4 — Write the analysis file
 
-Write the report to `~/source/@cron/analysis/YYYY-MM-DD-analysis.md` (today's
-date). Use plain markdown, the section headers above, tight bullets. This
-is a file the user skims in under a minute, not a long essay.
+Write the report to `~/source/@cron/analysis/YYYY-MM-DD-analysis.md`
+(today's date). Plain markdown, the section headers above, nothing else
+— no preamble, no closing summary restating what's above.
 
 ---
 
-## Step 4 — Save today's snapshot
+## Step 5 — Save today's snapshot
 
 Copy the current `📍.md` content verbatim to
 `~/source/@cron/snapshots/YYYY-MM-DD.md` (today's date). This is what
@@ -192,7 +224,7 @@ without a matching report.
 
 ---
 
-## Step 5 — Notify
+## Step 6 — Notify
 
 Send a macOS notification so the user knows the analysis is ready without
 having to check manually:
@@ -203,7 +235,7 @@ osascript -e 'display notification "Daily brain analysis ready" with title "Dail
 
 ---
 
-## Step 6 — Append to the run log
+## Step 7 — Append to the run log
 
 Append an entry to `~/source/@cron/log.txt` (create it if missing) — this
 is for the *next run of this skill*, not for the user. Keep it short
@@ -229,10 +261,13 @@ as a history of the skill's own reasoning across runs.
 
 - **Run more than once same day**: if `~/source/@cron/snapshots/YYYY-MM-DD.md`
   for today already exists, still overwrite it with the latest content at
-  Step 4 (idempotent), but diff against the same "yesterday" baseline as
+  Step 5 (idempotent), but diff against the same "yesterday" baseline as
   before, not against today's own earlier snapshot.
 - **Non-interactive/cron invocation**: there is no user to ask
   clarifying questions. Make reasonable judgment calls and note any
   assumptions briefly in the output rather than stopping to ask.
 - **Empty or missing snapshots directory**: treat as first run (see
-  Step 1).
+  Step 2).
+- **Weekend runs**: the cron job itself only fires on weekdays (see the
+  launchd schedule), but if the user triggers this manually on a
+  Saturday/Sunday, apply the weekend rules from Step 1 anyway.
