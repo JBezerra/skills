@@ -2,7 +2,7 @@
 name: daily-brain
 description: >
   Analyzes the day-over-day diff of the user's personal brain-dump file
-  (~/source/@ai/📍.md) — a mix of work tasks, ideas, and personal/life
+  (~/source/@cron/📍.md) — a mix of work tasks, ideas, and personal/life
   notes organized as a rolling Kanban. Produces a blended daily analysis
   covering progress made, new ideas/intentions captured, stale items that
   keep rolling over unresolved, and light coaching-style reflection
@@ -15,7 +15,7 @@ description: >
 
 # Daily Brain Analysis
 
-Analyze `~/source/@ai/📍.md` against yesterday's snapshot, and produce a
+Analyze `~/source/@cron/📍.md` against yesterday's snapshot, and produce a
 short daily report that blends accountability tracking, idea surfacing,
 and reflective coaching — the way a good 1:1 partner would look at this
 file with the user.
@@ -85,9 +85,9 @@ report on literally.
 
 ## Step 1 — Read the current file, prior context, and find yesterday's snapshot
 
-Read `~/source/@ai/📍.md`.
+Read `~/source/@cron/📍.md`.
 
-Read `~/source/@ai/log.txt` if it exists — this is a running, agent-facing
+Read `~/source/@cron/log.txt` if it exists — this is a running, agent-facing
 log written by past runs of this skill (see Step 6). It is not something
 the user reads day to day; it's how one run tells the next one what it
 learned. Treat anything in it as working context: open questions a past
@@ -96,7 +96,7 @@ tracking across multiple days, or corrections ("the user clarified X,
 don't flag it as stale again"). Let it inform Step 2, especially Stale
 items and Reflection.
 
-List `~/source/@ai/analysis/` and read the last 7 days of analysis files
+List `~/source/@cron/analysis/` and read the last 7 days of analysis files
 (`YYYY-MM-DD-analysis.md`) that exist there, oldest to newest. This is
 the user-facing output of past runs — use it, alongside `log.txt`, as
 context for today's run: don't repeat a reflection question that was
@@ -107,7 +107,7 @@ recurring stress pattern) build across the week instead of resetting
 each day. If fewer than 7 exist, use whatever is there — don't treat a
 short history as an error.
 
-List `~/source/@ai/snapshots/`. Snapshots are named `YYYY-MM-DD.md`. Find
+List `~/source/@cron/snapshots/`. Snapshots are named `YYYY-MM-DD.md`. Find
 the most recent snapshot strictly before today's date.
 
 - **If no prior snapshot exists** (first run ever): skip the diff step,
@@ -176,7 +176,7 @@ as "want me to remove/move X?" This skill never edits `📍.md` directly.
 
 ## Step 3 — Write the analysis file
 
-Write the report to `~/source/@ai/analysis/YYYY-MM-DD-analysis.md` (today's
+Write the report to `~/source/@cron/analysis/YYYY-MM-DD-analysis.md` (today's
 date). Use plain markdown, the section headers above, tight bullets. This
 is a file the user skims in under a minute, not a long essay.
 
@@ -185,7 +185,7 @@ is a file the user skims in under a minute, not a long essay.
 ## Step 4 — Save today's snapshot
 
 Copy the current `📍.md` content verbatim to
-`~/source/@ai/snapshots/YYYY-MM-DD.md` (today's date). This is what
+`~/source/@cron/snapshots/YYYY-MM-DD.md` (today's date). This is what
 tomorrow's run will diff against. Always do this last, after the
 analysis is written, so a failure mid-analysis doesn't leave a snapshot
 without a matching report.
@@ -205,7 +205,7 @@ osascript -e 'display notification "Daily brain analysis ready" with title "Dail
 
 ## Step 6 — Append to the run log
 
-Append an entry to `~/source/@ai/log.txt` (create it if missing) — this
+Append an entry to `~/source/@cron/log.txt` (create it if missing) — this
 is for the *next run of this skill*, not for the user. Keep it short
 (a few lines), plain text, prefixed with today's date:
 
@@ -227,7 +227,7 @@ as a history of the skill's own reasoning across runs.
 
 ## Edge cases
 
-- **Run more than once same day**: if `~/source/@ai/snapshots/YYYY-MM-DD.md`
+- **Run more than once same day**: if `~/source/@cron/snapshots/YYYY-MM-DD.md`
   for today already exists, still overwrite it with the latest content at
   Step 4 (idempotent), but diff against the same "yesterday" baseline as
   before, not against today's own earlier snapshot.
