@@ -268,19 +268,27 @@ Write the report to `~/source/@cron/analysis/YYYY-MM-DD-analysis.md`
 (today's date). Plain markdown, the section headers above, nothing else
 — no preamble, no closing summary restating what's above.
 
+If running interactively inside a sandboxed Claude Code session, prefer
+writing via Bash (e.g. `cat > file <<EOF ... EOF`) over the Write tool —
+Write has been observed to report success while silently not persisting
+files outside the sandbox's allowed paths. Verify with `ls`/`cat` after
+writing. This doesn't apply to the actual cron invocation, which runs
+unsandboxed.
+
 ---
 
 ## Step 6 — Save today's snapshot
 
 Copy the current `📍.md` content verbatim to
-`~/source/@cron/snapshots/YYYY-MM-DD.md` (today's date). This is what
-tomorrow's run will diff against. Always do this last, after the
+`~/source/@cron/snapshots/YYYY-MM-DD.md` (today's date) via `cp`. This is
+what tomorrow's run will diff against. Always do this last, after the
 analysis is written, so a failure mid-analysis doesn't leave a snapshot
-without a matching report.
+without a matching report. Same sandbox caveat as Step 5 applies if
+running interactively.
 
 ---
 
-## Step 7 — Notify
+## Step 7 — Notify and open the analysis
 
 Send a macOS notification so the user knows the analysis is ready without
 having to check manually:
@@ -288,6 +296,15 @@ having to check manually:
 ```bash
 osascript -e 'display notification "Daily brain analysis ready" with title "Daily Brain" subtitle "'"$(date +%Y-%m-%d)"'"'
 ```
+
+Then open today's analysis file in the editor:
+
+```bash
+code "$HOME/source/@cron/analysis/YYYY-MM-DD-analysis.md"
+```
+
+(`code` on this machine is wired to the Cursor CLI, not VS Code — this
+opens Cursor.) Do this last, after the file is fully written.
 
 ---
 
