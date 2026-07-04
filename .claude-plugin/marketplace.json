@@ -9,38 +9,14 @@
   },
   "plugins": [
     {
-      "name": "pr-review",
-      "description": "Code review a pull request",
+      "name": "personal-skills",
+      "description": "Jose Bezerra's personal skills: PR review, inbox cleanup, Jira ticket authoring, and ticket/RFC-to-implementation planning",
       "source": "./",
       "strict": false,
       "skills": [
-        "./pr-review"
-      ]
-    },
-    {
-      "name": "clean-inbox",
-      "description": "Cleans up the user's Gmail inbox by reading unread emails and marking unimportant ones as read",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./clean-inbox"
-      ]
-    },
-    {
-      "name": "jira-ticket",
-      "description": "Create or update Jira tickets using the Jira MCP, formatted as clean product-facing artifacts",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./jira-ticket"
-      ]
-    },
-    {
-      "name": "spec",
-      "description": "Turn a ticket/RFC into a reviewed plan via prd and Plan Mode, then execute it one task at a time with review before every commit",
-      "source": "./",
-      "strict": false,
-      "skills": [
+        "./pr-review",
+        "./clean-inbox",
+        "./jira-ticket",
         "./spec"
       ]
     }
