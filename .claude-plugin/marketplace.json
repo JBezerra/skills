@@ -10,14 +10,15 @@
   "plugins": [
     {
       "name": "personal-skills",
-      "description": "Jose Bezerra's personal skills: PR review, inbox cleanup, Jira ticket authoring, and ticket/RFC-to-implementation planning",
+      "description": "Jose Bezerra's personal skills: PR review, inbox cleanup, Jira ticket authoring, ticket/RFC-to-implementation planning, and daily brain-dump analysis",
       "source": "./",
       "strict": false,
       "skills": [
         "./pr-review",
         "./clean-inbox",
         "./jira-ticket",
-        "./spec"
+        "./spec",
+        "./daily-brain"
       ]
     }
   ]
