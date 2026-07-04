@@ -21,7 +21,7 @@ Treat these as complementary, not exclusive. A ticket plus a verbal correction f
 
 Pull in whatever was referenced: fetch the Jira ticket via the Jira MCP tools if a key or URL was given, fetch or read the RFC if one was given (Confluence page, Notion doc, pasted text, whatever form it's in). Read what's actually there before asking the user to repeat it back to you.
 
-If the ticket has a parent epic, glance at it, sibling tickets often clarify scope or terminology the ticket itself assumes the reader already knows.
+If the ticket has a parent, read it too, not just the ticket itself, the parent's own description carries the broader goal the individual ticket is only a slice of. Read its sibling tickets as well, they often clarify scope, terminology, or decisions the ticket itself assumes the reader already knows.
 
 ## Phase 2: Read the repo's own instructions
 
