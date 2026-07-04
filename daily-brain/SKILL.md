@@ -83,9 +83,18 @@ report on literally.
 
 ---
 
-## Step 1 — Read the current file and find yesterday's snapshot
+## Step 1 — Read the current file, the run log, and find yesterday's snapshot
 
 Read `~/source/@ai/📍.md`.
+
+Read `~/source/@ai/log.txt` if it exists — this is a running, agent-facing
+log written by past runs of this skill (see Step 6). It is not something
+the user reads day to day; it's how one run tells the next one what it
+learned. Treat anything in it as working context: open questions a past
+run wasn't sure about, judgment calls it made and why, patterns it was
+tracking across multiple days, or corrections ("the user clarified X,
+don't flag it as stale again"). Let it inform Step 2, especially Stale
+items and Reflection.
 
 List `~/source/@ai/snapshots/`. Snapshots are named `YYYY-MM-DD.md`. Find
 the most recent snapshot strictly before today's date.
@@ -180,6 +189,28 @@ having to check manually:
 ```bash
 osascript -e 'display notification "Daily brain analysis ready" with title "Daily Brain" subtitle "'"$(date +%Y-%m-%d)"'"'
 ```
+
+---
+
+## Step 6 — Append to the run log
+
+Append an entry to `~/source/@ai/log.txt` (create it if missing) — this
+is for the *next run of this skill*, not for the user. Keep it short
+(a few lines), plain text, prefixed with today's date:
+
+```
+## YYYY-MM-DD
+- <anything the next run should know: an ambiguous judgment call and why
+  you made it, something you noticed spanning multiple days that hasn't
+  fully resolved yet, a correction the user gave you mid-run, or a note
+  about how you handled an edge case today>
+```
+
+Only write something if there's an actual handoff worth making — don't
+pad this with a restatement of the day's analysis. If nothing unusual
+happened and the run was routine, a one-liner ("routine run, nothing to
+flag") is enough. Always append (never overwrite) so the log accumulates
+as a history of the skill's own reasoning across runs.
 
 ---
 
