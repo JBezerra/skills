@@ -65,6 +65,11 @@ For each thread, decide: **keep unread**, **mark as read**, or **unknown**.
    sender is `@govspend.com`. A colleague forwarding something usually
    means they want the user's input or awareness.
 
+7. **Gemini meeting notes** — sender is `gemini-notes@google.com`,
+   subject starts with `Notes:` (auto-generated recaps of the user's
+   meetings, e.g. "Federal Opps Weekly Touch Base"). The user reviews
+   these directly.
+
 ---
 
 ### MARK AS READ — noise the user doesn't want to see
