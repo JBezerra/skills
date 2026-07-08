@@ -22,16 +22,6 @@ example is usually two sentences too long — cut it to the one line that states
 the non-obvious part. Don't restate context already clear from the code or
 nearby types.
 
-### Data modeling
-
-Prefer a genuinely nested/structural data model over a flat list plus an
-inferred-grouping key, whenever the underlying concept is actually
-hierarchical (e.g. steps that contain sub-steps). A flat array with an
-optional correlation field (scanned for consecutive matches to infer
-grouping) reads as added complexity even if it avoids touching a navigation
-index elsewhere — model the real shape and adapt the mechanical consequences,
-don't flatten the model to dodge them.
-
 ### Function structure
 
 Extract non-trivial inline logic — especially a derived/clamped numeric
@@ -44,25 +34,21 @@ Prefer a pure derivation (e.g. `Array.reduce` building a running total) over
 a mutable accumulator (`let x = 0; ...; x += ...`) in a loop or `.map()`,
 even at the cost of a little more code.
 
-### Testing
+### Naming
 
-Test from the user's standpoint with accessible queries (`getByRole`,
-`getByText`, `getByLabelText`, etc.), not `container.querySelectorAll` or raw
-DOM class/attribute assertions. If a component has no accessible way to query
-or assert its state, that's a sign it's missing real accessibility semantics
-(`role`, `aria-*`) — add them to the component itself rather than reaching
-for `querySelectorAll` in the test.
-
-### Styling (React + Tailwind projects)
-
-Prefer a `data-*` attribute plus a `data-[attr=value]:` Tailwind variant over
-inlining a JS conditional into a `className` string.
+Variable names should be short but descriptive — name a value for what it
+actually is, and reach for the shortest name that still says that. This rules
+out single-letter placeholders (`u`, `v`, `x`) whose meaning you have to infer
+from context, and equally rules out padding a name with noise once it's
+already clear. The bar applies everywhere, including loop and comprehension
+variables and even when the descriptive name makes a one-liner longer: prefer
+`[resource_url.strip() for resource_url in raw.split(",")]` over
+`[u.strip() for u in raw.split(",")]`.
 
 ## How this skill learns
 
 When the user corrects or steers the style of generated code — not a
-correctness bug, a *taste* call (naming, structure, comment density, data
-shape, test style, and similar) — and the correction is a pattern likely to
+correctness bug — and the correction is a pattern likely to
 recur, not a one-off:
 
 1. Check whether it's already covered by a bullet above or by the current
