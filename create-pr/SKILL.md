@@ -30,7 +30,7 @@ The team runs a stacked release flow (`develop` → `release/qa` → `master`/`m
 
 5. **Show the full draft and confirm before creating.** Print the title and the rendered Markdown body and wait for explicit go-ahead — opening a PR is outward-facing. If the branch isn't pushed yet, offer to push first.
 
-6. **Create it.** `gh pr create --base <base> --title "..." --body "..."` (write the body to a temp file and use `--body-file` to keep Markdown intact). Return the PR URL. Never add a "Generated with Claude Code" footer or any `Co-Authored-By` trailer.
+6. **Create it.** `gh pr create --base <base> --assignee @me --title "..." --body-file <file>` (write the body to a temp file and use `--body-file` to keep Markdown intact). Always pass `--assignee @me` so the PR is assigned to José. Return the PR URL. Never add a "Generated with Claude Code" footer or any `Co-Authored-By` trailer.
 
 ## Title conventions
 
