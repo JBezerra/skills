@@ -45,37 +45,28 @@ If there's no Jira key (infra bump, config fix, conflict resolution), a plain de
 
 ## Standard PR body
 
-Use only the sections that carry weight. `# Jira` and `## Summary` are effectively always present; the rest appear when they have something to say. Observed order:
+**Default to the minimal body.** The reviewer reads the diff — the PR description is the one thing the diff can't tell them, not a prose mirror of it. For most PRs that is: the Jira link, a one-line Summary of the core behavioral change, and bare companion links. Everything else (`Why`, `Testing Steps`, `Notes`, per-item enumerations) is *earned* by having something the diff doesn't already convey. When in doubt, leave it out. A reviewer skimming a 4-line description is the goal, not a thorough one.
+
+The minimal body that fits most changes:
 
 ```markdown
 # Jira
 https://govspend.atlassian.net/browse/GS-XXXXX
-<second link if the work spans two tickets>
 
 ## Summary
-- <present-tense bullet: what this PR does, from the reader's POV>
-- <one bullet per meaningful behavior change; backtick params, env vars, files>
-- Companion of <#N or full URL to the sibling PR>   ← if there is one
+- <one line: the core behavioral change, reader's POV>
 
-## Why
-<Only when the reason isn't self-evident. One or two sentences. Link the evidence
-that motivated it — Grafana/Kibana/Axiom logs, a Slack thread, a metrics dashboard.
-This is where you justify a removal, a revert, or a non-obvious approach.>
-
-## Testing Steps
-<Concrete, reproducible steps. Number them when order matters, bullet them when it
-doesn't. Link the exact fixture — a specific bidDetails URL, a saved search, an env.
-For multi-service setups, break Setup into subsections:>
-
-### Setting up API
-- ...
-
-### Setting up MCP
-- ...
-
-## Notes
-- <caveats, and anything intentionally out of scope, with the follow-up ticket>
+## Companion changes
+- <bare URL to each sibling PR>
 ```
+
+Grow from there **only** when a section carries information the diff/summary doesn't:
+
+- **`## Summary`** — usually one line. Add a second bullet only for a genuinely separate behavior change, never to restate what the diff shows (exact config values, the list of files, per-env repetition, a guard tweak). "`WORKOS_RESOURCE_URL` now accepts a comma-separated list of audiences" — not three bullets enumerating each env's new URL.
+- **`## Why`** — one or two sentences, only when the motivation isn't obvious from the Summary. Justify a removal, a revert, a non-obvious approach, or a cross-repo/deploy dependency a reviewer would otherwise miss. Link the evidence (Grafana/Kibana/Axiom, a Slack thread) rather than describing it.
+- **`## Testing Steps`** — only when verification is non-trivial or needs a specific fixture/setup. Omit them for small, self-evident changes; vague steps a reviewer could guess are pure noise. Link the exact fixture (a bidDetails URL, a saved search, an env). For multi-service setups, break Setup into `### Setting up API` / `### Setting up MCP` subsections.
+- **`## Companion changes`** — bare URLs, one per line. Don't annotate them ("must deploy after", "API-side mirror of #N"); if a dependency genuinely matters, it belongs in one sentence of `Why`, not tacked onto every link.
+- **`## Notes`** — caveats or out-of-scope items with a follow-up ticket, only when they'd actually surprise a reviewer.
 
 Other sections that show up when relevant: `## Demo` (a Slack recording link), `## Screenshots` (before/after images), `## Ref` (external docs that justify the change), `## Test plan` (a checklist for infra/build PRs).
 
@@ -142,7 +133,8 @@ Prefer a clean full revert over a partial one and say why. Mark production-affec
 - **Link the evidence, don't describe it.** A Grafana/Kibana/Axiom link for a logging-motivated change, a Slack thread for a demo, the exact fixture URL for a repro, the sibling PR for a companion. A claim with a link beats a paragraph without one.
 - **Summary bullets are present-tense and behavioral** — what the PR does for the reader, not a file-by-file list. "WorkOS JWTs without an encrypted API key are forwarded directly to Spark as Bearer tokens", not "edited auth_provider.py".
 - **Explain the why for anything non-obvious** — a removal, a revert, a workaround, an approach that competes with the existing pattern. Skip the Why section when the Summary already makes it obvious.
-- **Keep it lean.** Omit empty sections entirely. A three-line PR is correct when the change is three lines. Don't pad.
+- **Keep it lean, and lean harder than feels natural.** Omit empty sections entirely. A four-line PR (Jira + one Summary line + companion links) is the common case, not the exception. Reviewers read the description as a quick orientation, then read the diff. Length reads as noise.
+- **Never restate what the diff already shows.** The exact new config values, the list of changed files, the per-env repetition of the same change, a one-line guard tweak — the reviewer sees all of that in the diff. Say the *behavior* once and stop. If a bullet's content is recoverable by reading the diff, cut it.
 - **⚠️** is for genuine warnings (unrelated changes, production impact, merge-order hazards), used sparingly.
 - **No em-dashes as sentence punctuation** — use commas, periods, or parentheses. **Never** add a `Co-Authored-By` trailer or an AI-generated footer.
 
@@ -153,4 +145,5 @@ Prefer a clean full revert over a partial one and say why. Mark production-affec
 - Don't duplicate a long description across every PR in a stack — one carries it, the rest point to it.
 - Don't omit the hotfix disclaimer when the `master` branch carries develop bleed, and don't include it when the branch is clean.
 - Don't invent Testing Steps you can't ground in the diff or the ticket — vague steps are worse than none.
-- Don't leave companion/merge-order links out. A stacked PR without its chain links is the most common way these get merged in the wrong order.
+- Don't leave companion links out. A stacked PR without its chain links is the most common way these get merged in the wrong order. Keep them as bare URLs, not annotated.
+- Don't pad a small PR with `Why` / `Testing Steps` / `Notes` it doesn't need, and don't re-describe the diff in prose. If the change is self-evident, Jira + a one-line Summary + companion links is the whole body.
