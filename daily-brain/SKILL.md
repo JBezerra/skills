@@ -2,7 +2,7 @@
 name: daily-brain
 description: >
   Analyzes the day-over-day diff of the user's personal brain-dump file
-  (~/source/@cron/📍.md) — a mix of work tasks, ideas, and personal/life
+  (~/source/@cron/daily-brain/📍.md) — a mix of work tasks, ideas, and personal/life
   notes organized as a rolling Kanban. Produces a blended daily analysis
   covering progress made, new ideas/intentions captured, stale items that
   keep rolling over unresolved, and light coaching-style reflection
@@ -15,7 +15,7 @@ description: >
 
 # Daily Brain Analysis
 
-Analyze `~/source/@cron/📍.md` against yesterday's snapshot, and produce a
+Analyze `~/source/@cron/daily-brain/📍.md` against yesterday's snapshot, and produce a
 short daily report that blends accountability tracking, idea surfacing,
 and reflective coaching — the way a good 1:1 partner would look at this
 file with the user.
@@ -157,9 +157,9 @@ hard to push:
 
 ## Step 2 — Read the current file, prior context, and find yesterday's snapshot
 
-Read `~/source/@cron/📍.md`.
+Read `~/source/@cron/daily-brain/📍.md`.
 
-Read `~/source/@cron/log.txt` if it exists — this is a running, agent-facing
+Read `~/source/@cron/daily-brain/log.txt` if it exists — this is a running, agent-facing
 log written by past runs of this skill (see Step 8). It is not something
 the user reads day to day; it's how one run tells the next one what it
 learned. Treat anything in it as working context: open questions a past
@@ -169,7 +169,7 @@ don't flag it as stale again"), and any priorities the user gave in a
 past interactive run (see Step 3 below). Let it inform Step 4,
 especially Insights, Stale items, and Reflection.
 
-List `~/source/@cron/analysis/` and read the last 7 days of analysis files
+List `~/source/@cron/daily-brain/analysis/` and read the last 7 days of analysis files
 (`YYYY-MM-DD-analysis.md`) that exist there, oldest to newest. This is
 the user-facing output of past runs — use it, alongside `log.txt`, as
 context for today's run: don't repeat a reflection question that was
@@ -180,7 +180,7 @@ recurring stress pattern) build across the week instead of resetting
 each day. If fewer than 7 exist, use whatever is there — don't treat a
 short history as an error.
 
-List `~/source/@cron/snapshots/`. Snapshots are named `YYYY-MM-DD.md`. Find
+List `~/source/@cron/daily-brain/snapshots/`. Snapshots are named `YYYY-MM-DD.md`. Find
 the most recent snapshot strictly before today's date.
 
 - **If no prior snapshot exists** (first run ever): skip the diff step,
@@ -207,7 +207,7 @@ file or the diff (e.g. "bigger focus this week: Mergi or the Staff Eng
 applications?"), not a generic "what are your priorities?" Keep it to
 one question.
 
-Append the answer to `~/source/@cron/log.txt` immediately, under its own
+Append the answer to `~/source/@cron/daily-brain/log.txt` immediately, under its own
 heading:
 
 ```
@@ -309,7 +309,7 @@ Skip the section if the document is already tidy.
 
 ## Step 5 — Write the analysis file
 
-Write the report to `~/source/@cron/analysis/YYYY-MM-DD-analysis.md`
+Write the report to `~/source/@cron/daily-brain/analysis/YYYY-MM-DD-analysis.md`
 (today's date). Plain markdown, the section headers above, nothing else
 — no preamble, no closing summary restating what's above.
 
@@ -325,7 +325,7 @@ unsandboxed.
 ## Step 6 — Save today's snapshot
 
 Copy the current `📍.md` content verbatim to
-`~/source/@cron/snapshots/YYYY-MM-DD.md` (today's date) via `cp`. This is
+`~/source/@cron/daily-brain/snapshots/YYYY-MM-DD.md` (today's date) via `cp`. This is
 what tomorrow's run will diff against. Always do this last, after the
 analysis is written, so a failure mid-analysis doesn't leave a snapshot
 without a matching report. Same sandbox caveat as Step 5 applies if
@@ -345,7 +345,7 @@ osascript -e 'display notification "Daily brain analysis ready" with title "Dail
 Then open today's analysis file in the editor:
 
 ```bash
-code "$HOME/source/@cron/analysis/YYYY-MM-DD-analysis.md"
+code "$HOME/source/@cron/daily-brain/analysis/YYYY-MM-DD-analysis.md"
 ```
 
 (`code` on this machine is wired to the Cursor CLI, not VS Code — this
@@ -355,7 +355,7 @@ opens Cursor.) Do this last, after the file is fully written.
 
 ## Step 8 — Append to the run log
 
-Append an entry to `~/source/@cron/log.txt` (create it if missing) — this
+Append an entry to `~/source/@cron/daily-brain/log.txt` (create it if missing) — this
 is for the *next run of this skill*, not for the user. Keep it short
 (a few lines), plain text, prefixed with today's date:
 
@@ -377,7 +377,7 @@ as a history of the skill's own reasoning across runs.
 
 ## Edge cases
 
-- **Run more than once same day**: if `~/source/@cron/snapshots/YYYY-MM-DD.md`
+- **Run more than once same day**: if `~/source/@cron/daily-brain/snapshots/YYYY-MM-DD.md`
   for today already exists, still overwrite it with the latest content at
   Step 6 (idempotent), but diff against the same "yesterday" baseline as
   before, not against today's own earlier snapshot.
