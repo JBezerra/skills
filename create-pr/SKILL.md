@@ -21,7 +21,8 @@ The team runs a stacked release flow (`develop` → `release/qa` → `master`/`m
    - base `develop` (or a feature base) → **Standard PR**
    - base `release/qa` → **Warmfix** (see the Warmfix section)
    - base `master` / `main` → **Hotfix** (see the Hotfix section)
-   - the PR reverts a merge → **Revert / incident** (see that section)
+   - the PR reverts a merge *because something bad shipped* → **Revert / incident** (see that section)
+   - the PR undoes an earlier revert to re-land deliberately-held-back work (e.g. a hotfix revert whose hold period is now over) → **Standard PR, minimal body**. This isn't an incident; there's no blast radius to report. State what's being re-landed and why it was held back in one `Summary` bullet, and stop — don't reach for the incident template just because `git revert` is involved.
    - the PR only exists to promote another PR up the stack, or to mirror a change in the sibling repo → **Companion** (terse body, see below)
 
 3. **Detect companions.** A change usually lands as a chain: `develop` PR ↔ `master`/`main` PR ↔ `release/qa` PR, and spark ↔ spark-mcp often move together. Look for the sibling PR (`gh pr list --search "GS-XXXX"` in this repo and the sibling repo) and link it. One PR in the chain carries the **full** description; the rest are terse and point to it.
@@ -106,7 +107,9 @@ A warmfix targets `release/qa` — a fix that needs to ride the current QA build
 
 ## Revert / incident directives
 
-When a merge shipped something it shouldn't have, the PR is a full revert plus a post-mortem. Structure it so anyone can see the blast radius:
+This template is for incidents only: a merge shipped something it shouldn't have, and the PR is a full revert plus a post-mortem. If instead you're *un-reverting* something (re-landing work after an earlier hotfix revert held it back, now that its time has come), that's a standard PR with a minimal body, not an incident — there's nothing accidental to report, so skip straight to the `## Standard PR body` template. Don't apply the incident structure just because the diff is `git revert`.
+
+When it genuinely is an incident, structure it so anyone can see the blast radius:
 
 ```markdown
 ## What happened
