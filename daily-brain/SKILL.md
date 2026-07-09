@@ -20,23 +20,52 @@ short daily report that blends accountability tracking, idea surfacing,
 and reflective coaching — the way a good 1:1 partner would look at this
 file with the user.
 
-**This is a report the user actually reads every morning — optimize for
-insight quality, not brevity for its own sake.** Up to ~5 minutes of
-reading is fine. Cut connective/hedging phrases that add no information
-("worth noting", "it's worth", "this represents") but never cut
-something *substantive* just because it repeats. If a stale item, a
-recurring pattern, or an open question from a prior day's analysis is
-still unresolved, say it again — persistent unresolved things are
-exactly what this skill exists to keep in front of the user. Only drop a
-callback if it's been explicitly resolved or the user has said to stop
-flagging it (check `log.txt` for that). When in doubt, include it; the
-user will tell you if something isn't worth repeating.
+**This is a report the user reads every morning — make it fast to read.**
+Aim for a 2-3 minute read, not 5. The value is in the signal, not the
+word count: keep every real insight, but say it in the fewest, plainest
+words (see "How to write it" below).
+
+Cut connective/hedging phrases that add no information ("worth noting",
+"it's worth", "this represents"). Never cut something *substantive* just
+because it repeats: if a stale item, a recurring pattern, or an open
+question from a prior day is still unresolved, say it again. Persistent
+unresolved things are exactly what this skill exists to keep in front of
+the user — say it concisely, but say it. Only drop a callback if it's
+been explicitly resolved or the user has said to stop flagging it (check
+`log.txt`). When in doubt, include it; the user will tell you if
+something isn't worth repeating.
+
+### How to write it
+
+Plain and short. Write the way you'd explain it to a friend, not the way
+a consultant writes a slide deck.
+
+- **Short sentences, one idea each.** If a sentence stacks three clauses
+  with dashes, split it into separate sentences.
+- **Everyday words.** No jargon, no abstract metaphors, no invented
+  labels. Say "it's hard to get started on it", not "it's an
+  activation-energy problem". Say "Today got shorter", not "Today
+  decongested". Say "nothing makes you open it", not "no forcing
+  function". If a smart friend would have to reread a sentence, rewrite
+  it.
+- **Prefer commas and periods over em-dashes.** An occasional dash is
+  fine; never stack two or three in one sentence.
+- **Concrete over clever.** Name the actual task and the actual number of
+  days. Describe the behavior, not the psychology theory behind it, even
+  when the pattern is real.
 
 The file is the user's external brain: work tasks (GovSpend/AIP), a side
 project (Mergi), and personal/family notes, organized into a `Done` log,
 a `Kanban` (Today / Tomorrow / This Week / Backlog), and a `Resoluções
 Semanal` weekly reflection block. Treat all of it as fine to read and
 reason about locally — no need to redact or split out personal content.
+
+**`Resoluções Semanal` is food for thought, not a to-do list.** These are
+reflection prompts the user keeps for himself, not tasks to finish. It is
+completely fine for it to sit blank. Never flag it as stale, overdue, or
+"unanswered", never count it as an unfinished item, and never push the
+user to fill it in. At most, one of its themes can *inspire* a Reflection
+question — but its blankness is never itself the problem.
 
 **Not everything the user does is logged here** — especially personal,
 non-work activity (Jiu-Jitsu, reading, time with Thata/Rose) often
@@ -221,9 +250,10 @@ if it's not actionable today. Examples of what belongs here: a pattern
 repeating across the week that the user hasn't named themselves, a
 tension between two stated goals, a connection between something in
 Today and something in This Week/Backlog, a read on whether a stale item
-looks like early cascade vs. genuinely dropped. Skip it if you genuinely
-have nothing beyond the obvious — don't manufacture an insight to fill
-the section.
+looks like early cascade vs. genuinely dropped. Keep it to the 2-3
+strongest reads, each a short bullet in plain words — not four long ones.
+Skip it if you genuinely have nothing beyond the obvious; don't
+manufacture an insight to fill the section.
 
 ### 3. Next actions
 A ranked list of 3-5 concrete things to do next, ordered by priority.
@@ -244,21 +274,36 @@ an existing idea if it's genuinely non-obvious — don't force it.
 Checklist items in Today/Tomorrow unchanged and unchecked across 3+
 snapshots (2 is enough if tagged urgent). One line each, name the item
 and how many days. Skip GovSpend/AIP items here on Mon if the gap is
-just the weekend. Remember not everything is logged (see above) — phrase
-these as questions where the item is plausibly untracked-but-happening,
-not flat "you didn't do X."
+just the weekend. Never list `Resoluções Semanal` or its weekly questions
+here — it's reflection, not a task (see above). Remember not everything
+is logged — phrase these as questions where the item is plausibly
+untracked-but-happening, not flat "you didn't do X."
 
 ### 6. Reflection
-**One question, not a menu.** Pick the single sharpest angle from
-`Resoluções Semanal`, the diff, or something worth savoring rather than
-fixing (see the "how the user actually works" context above). Monday
-gets more room here since that's the weekly reset; other days, one
-short question is enough — sometimes none if nothing stands out.
+**One question, with a short setup.** Two or three plain sentences of
+context, then the single sharpest question. Not a paragraph, not a menu
+of questions. Pick the angle from the diff, a recurring pattern, or
+something worth savoring rather than fixing (see the "how the user
+actually works" context above). Monday gets a little more room since
+that's the weekly reset; other days keep it tight, and some days nothing
+stands out — that's fine, skip it.
 
 ### 7. Cleanup (only if genuinely warranted)
-One-line suggestions when something in Backlog/This Week looks done, or
-a `Done` week block needs archiving. Phrase as "remove/move X?" — never
-edit `📍.md` directly.
+Look across the *whole document*, not just the Done log, for things that
+should be tidied up. One-line suggestions for:
+
+- Backlog / This Week items that look already done or no longer relevant.
+- Items that have sat in the same place, untouched, for a long time —
+  dead weight that's cluttering the board rather than waiting on action.
+- Very old notes, finished projects, or stale `1:1 Notes` that could be
+  archived or deleted.
+- `Done` week blocks old enough to archive.
+
+Phrase every suggestion as a question the user can act on ("remove X?",
+"move X to Backlog?", "archive last week's Done block?") — never edit
+`📍.md` directly. This is different from Stale (Step 5): Stale is about
+active items you should *do*; Cleanup is about clutter you should *clear*.
+Skip the section if the document is already tidy.
 
 ---
 
