@@ -20,7 +20,8 @@
         "./jira-ticket",
         "./sdd",
         "./daily-brain",
-        "./coding-guidelines"
+        "./coding-guidelines",
+        "./mergi-backlog"
       ]
     }
   ]
