@@ -45,6 +45,8 @@ Push on task boundaries: each task should be something that could be implemented
 
 The `prd` skill saves its output to a file, treat that file as the plan's source of truth for the rest of this workflow. Everything from here on, feedback, revisions, task-by-task progress, gets reflected back into that file, not just held in conversation.
 
+**If a Jira ticket is in play**, the spec filename must be prefixed with its ticket key, e.g. `GS-1234-prd-feature-name.md`, not just `prd-feature-name.md`. If `prd` doesn't save it that way itself, rename/move the file right after it's created so every reference to the plan file from here on uses the prefixed name.
+
 ## Phase 6: Present the plan for approval
 
 Use `ExitPlanMode` to hand the plan to the user. Do not proceed to implementation until it's approved.
