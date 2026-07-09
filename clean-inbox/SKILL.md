@@ -70,6 +70,19 @@ For each thread, decide: **keep unread**, **mark as read**, or **unknown**.
    meetings, e.g. "Federal Opps Weekly Touch Base"). The user reviews
    these directly.
 
+8. **Security/compliance training reminders** — KnowBe4 or similar
+   info-sec training platforms: course assignments, overdue notices,
+   "Security Tips" newsletters, LearnUpon enrollment emails, or
+   colleague reminders about required training. The user wants to see
+   these so they don't miss a compliance deadline.
+
+9. **GitHub PR approvals with substantive commentary** —
+   `notifications@github.com` subject/snippet like "@X approved this
+   pull request" that ALSO contains real reviewer commentary beyond a
+   bare approval (e.g. "Just one note/observation..."). Treat as human
+   feedback, not noise, even though it's technically an "approved"
+   notification.
+
 ---
 
 ### MARK AS READ — noise the user doesn't want to see
@@ -121,6 +134,10 @@ These are patterns that should be silently cleaned up:
 - **Privacy policy & ToS updates** — Automated emails from services
   updating their terms. Recognized by subjects like "We're updating our
   Privacy Policy" or "Terms of Service".
+
+- **Temporal.io SDK advisories** — sender `support@temporal.io`
+  (e.g. "Workflow Context Advisory"). Routine vendor advisory noise,
+  even though `jobs/` uses Temporal workflows.
 
 ---
 
