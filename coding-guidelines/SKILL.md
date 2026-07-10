@@ -34,6 +34,14 @@ Prefer a pure derivation (e.g. `Array.reduce` building a running total) over
 a mutable accumulator (`let x = 0; ...; x += ...`) in a loop or `.map()`,
 even at the cost of a little more code.
 
+Push null/absence tolerance into a helper rather than guarding at the call
+site. Give the helper nullable optional params and optional-chain internally,
+returning the base value when inputs are missing, so callers invoke it
+unconditionally on a single path — instead of a call-site ternary that
+re-states the fallback (`org && ai ? enrich(x, org, ai) : x`). The "what to do
+when inputs are missing" logic then lives in one place, not split between the
+helper and every caller.
+
 ### Naming
 
 Variable names should be short but descriptive — name a value for what it
