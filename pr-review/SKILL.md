@@ -12,7 +12,7 @@ You do NOT post inline comments to GitHub. You output a structured report.
 ## How to run the review
 
 1. **Parse the input** — accept a PR URL (`https://github.com/org/repo/pull/N`) or a bare PR number (assume the current repo from `git remote`).
-2. **Fetch the PR** — use `gh pr view` to get the title, body, and branch name. Use `gh pr diff` to get the full diff.
+2. **Fetch the PR** — use `gh pr view` to get the title, body, branch name, and comments (`--json title,body,comments,reviews`). Use `gh pr diff` to get the full diff. Read the comment thread — context provided there can justify what looks like scope creep or an unusual decision from the diff alone. Don't flag something as out of scope without checking whether the author already explained it.
 3. **Find the Jira ticket** — look for a `GS-XXXX` pattern in two places: the branch name and the PR description. Either or both may contain it. Extract the ticket key and use the `mcp__Jira__getJiraIssue` tool to fetch the full ticket. This is mandatory — the ticket is the source of truth for what the PR is supposed to do, including acceptance criteria, scope decisions, and context the PR description may omit.
 4. **Read the actual files** — don't rely only on the diff. For any changed file where context matters (service logic, middleware, auth, config), read the current file from the repo. The diff shows what changed; the file shows what it means. For any added guard, conditional branch, or defensive layer: identify the assumption it's based on, find the files that would confirm or deny it, and read them before concluding whether the complexity is justified.
 5. **Apply the review principles below** — work through them in priority order, using the Jira ticket as the primary source for AC and intent.
@@ -42,18 +42,21 @@ Look for things that are broken, not just things that could be better:
 
 When flagging correctness issues, always include a reproduction path or the specific code that's wrong. Don't make the author guess what to check.
 
-### 3. Fact-check the premise of added complexity
+### 3. Fact-check the premise of every change
 
-When a PR adds conditional logic, a guard, an extra abstraction, or any code that handles a specific scenario — don't assume the scenario is real. Verify it.
+Every addition AND every deletion rests on a premise. Don't accept the premise because the PR description states it. Verify it.
+
+- **Additions**: the premise is "this scenario is real and the code is needed."
+- **Deletions**: the premise is "this code is unreachable / unused." Verify with a grep or call-path trace — and cite the result in the review even when the premise holds. "Verified: `grep -rn 'from spark_mcp.shared.date_validator' spark_mcp/` → 0 hits" is a complete finding. Don't run the check silently.
 
 **Process:**
-1. Identify the assumption: what situation does this code guard against or prepare for?
-2. Find the files that determine whether that situation can actually occur.
-3. Read them. Only after confirming the premise holds should the complexity be accepted as justified.
+1. Identify the assumption: what situation does this addition guard against, prepare for, or solve?
+2. Find what would confirm or deny that assumption — a file, a language/platform guarantee, a library's documented behavior, basic system semantics.
+3. Check it. Only after confirming the premise holds should the addition be accepted as justified.
 
-**Two questions to ask for every piece of added complexity:**
-1. Can the scenario this code guards against actually occur? Trace the call path to find out.
-2. Even if it can occur — is the consequence severe enough to justify the added maintenance burden?
+**Two questions to ask for every addition:**
+1. Is the premise actually true? Trace the call path, read the file, or check the platform guarantee.
+2. Even if the premise is true — is the consequence severe enough to justify the added maintenance burden?
 
 If either answer is no, flag it as a **suggestion** and cite the specific file:line that disproves the premise. This is what turns "this looks like over-engineering" into a defensible, specific finding.
 
@@ -74,6 +77,8 @@ Flag:
 - Cross-module imports that create coupling where a local constant or the receiving module's own constant would do — an import from a sibling module signals that responsibility may be in the wrong place
 
 The question to ask: "if I deleted this, would anything break?" If the answer is no, it should be a suggestion to remove it.
+
+**Ask whether the change is coherent with the existing codebase design.** The diff shows what changed; the question is whether the change extends the existing design or competes with it. A new folder structure, abstraction, or convention that sits alongside an existing one using a different organizing principle introduces friction — even if each piece looks reasonable in isolation. This applies to any kind of change: test layout, module structure, config conventions, abstraction patterns. The question is always: does this fit what's already there, or does it introduce a second design axis into a space that already had one?
 
 ### 5. Completeness against the codebase contract
 
@@ -195,3 +200,30 @@ Always use exactly this structure. Omit any section that has no findings. If not
 - **question:** [specific question]
 - **question:** ...
 ```
+
+---
+
+## Posting findings as pending review threads (only when explicitly asked)
+
+The default output is the report above. Do NOT post anything to GitHub unless the user explicitly asks (e.g. "post these as pending threads"). When they do, create a single **pending draft review** so nothing is visible to the author until the user submits it themselves.
+
+**Mechanism** — one draft review carrying all inline comments:
+
+```
+POST /repos/{owner}/{repo}/pulls/{N}/reviews
+```
+Body: `{ "commit_id": "<head sha>", "comments": [ {path, line, side, body}, ... ] }` with **no `event` field**. Omitting `event` is what makes the review PENDING. Do not post via `POST /pulls/{N}/comments` — that publishes immediately and cannot be staged.
+
+**Anchors must land inside the diff.** A comment on a line the PR didn't change is rejected with `422 "line must be part of the diff"`. Before posting:
+
+1. Get the head SHA: `gh api repos/{owner}/{repo}/pulls/{N} --jq '.head.sha'`.
+2. For each finding, confirm its line falls inside a changed hunk. Read the hunk headers (`@@ -old +new,len @@`) and count new-side line numbers down from `+new`.
+3. If the logic you're flagging is **pre-existing / unchanged** — common, given you often flag code the PR only touches nearby — anchor to the nearest in-diff line in the same block and keep the precise `Check \`:realline\`` in the body. The anchor is only where the thread hangs; the body carries the real location.
+
+Use `"side": "RIGHT"` for the new version (added or context lines), `"LEFT"` only for removed lines. Multi-line threads add `start_line`/`start_side`.
+
+**Post** with `gh api repos/{owner}/{repo}/pulls/{N}/reviews --method POST --input payload.json`. Success returns `"state": "PENDING"` and a `review_id`. Then **verify** the comments attached: `gh api repos/{owner}/{repo}/pulls/{N}/reviews/{review_id}/comments` (pending comments render `line: null` in that listing — expected, they're still anchored to the right line).
+
+**Hand back to the user — never submit the review yourself.** Submitting is outward-facing and the verdict is theirs. Tell them to open the PR's **Files changed** tab (threads show a "Pending" badge), edit wording inline, and **Submit review**. Always give them the discard escape hatch: `gh api repos/{owner}/{repo}/pulls/{N}/reviews/{review_id} -X DELETE`.
+
+Comment bodies use the exact same style as the report: `**blocker:**` / `**suggestion:**` / `**question:**`, action-first imperative, `given` as the rationale connector, `Check \`path:line\``, and a code block whenever the fix involves restructuring.

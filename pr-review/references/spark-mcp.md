@@ -43,6 +43,12 @@ Auth regressions are hard blockers. The AMA JWT path in particular is easy to ac
 
 ---
 
+## Data layer naming conventions
+
+**ES index schema name vs. web app URL route are separate things.** In spark-mcp, the ES index schema name (e.g., `federalProcurementDataSystem`) is a valid identifier used in Contexture trees and pipeline configs. It is correct and should not be changed. The web app URL route is a separate concern — `/federalProcurementDataSystem/:id` was deprecated in favor of `/federalContract/:id`. Don't conflate the two: schema name changes and URL route changes are independent.
+
+---
+
 ## General patterns to enforce
 
 **Feature package structure**: new tools live in `spark_mcp/features/<tool_name>/` with `__init__.py`, `tool.py`, `routes.py`, `instructions.md`, and `models.py` as needed.
