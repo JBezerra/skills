@@ -144,11 +144,14 @@ Don't make extra API calls when the same data is already available from a call a
   ```
   **suggestion**: remove caching based on the mcp Client
 
-  The cache key update is unnecessary given we generate a brand new JWT for every Slack request (Check `processChatIntegrationEvent.ts:102`). So the cache never naturally collides between the two paths.
+  The cache key update is unnecessary given we generate a brand new JWT for every Slack request, so the cache never naturally collides between the two paths.
   ```
-- **Include a code block when the suggestion involves restructuring** — if the simplified version isn't obvious, show it. A code block removes ambiguity and makes the suggestion actionable without back-and-forth.
+- **Describe the problem, not the fix** — state what's wrong, the trace of *why* (the mechanism you found), and the real-world consequence you hit. Do NOT prescribe how to fix it — no "do X", no solution code block — unless the author asked or you're explicitly looking for one specific solution. Shape the comment around the problem and let the author own the fix; a bolted-on solution and exact trace read as noise. Only in the explicit-solution case do you show a concrete fix or code block.
 - **Trailing observations don't need a label** — a short consequence that flows naturally from the main suggestion can be left unlabeled. Example: after suggesting a simplification to `on_request`, "I suppose with the simplification here we can also simplify the tests" needs no `**suggestion:**` prefix.
-- **Cite file:line with "Check `path:line`"** — write `Check \`processChatIntegrationEvent.ts:102\``, not "the impersonation code in the activity". If the reference is self-evident, omit it.
+- **Don't sprinkle line references** — a parenthetical `(Check \`file:line\`)` tagged onto every claim is noise. Name a location only when it *is* the finding — e.g. the bug lives in one specific function, especially one *outside the diff* — and say it plainly ("the bug is in `_normalize_type_for_storage`"), not as a tag on each sentence. Otherwise let the anchor line speak for itself.
+- **One finding per comment** — don't tack a secondary or adjacent issue onto a comment ("Also, a malformed id 500s..."). Give it its own thread or leave it out; bundling dilutes the finding.
+- **Calibrate severity conservatively** — output that is confusing but still functional is a `**suggestion:**`; something actually broken (loops forever, persists wrong data, regresses behavior) is a `**blocker:**`. Don't inflate.
+- **Write as a teammate, first person plural** — "we normalize federal types to `report`; currently they use their own schema" reads better than a formal report. Natural and conversational, matching the team's voice.
 - **Name the thing being dropped** — "drop test suite for `getMcpSparkHeaders`" not "drop this suite".
 - When flagging an AC violation, quote the AC text directly
 - When flagging a coding standards violation, link the standard
