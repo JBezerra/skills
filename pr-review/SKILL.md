@@ -136,10 +136,10 @@ Don't make extra API calls when the same data is already available from a call a
 
 ## Comment style
 
-Use the `caveman-review` skill to write the individual findings — it keeps each one terse and actionable rather than padded with throat-clearing. The rules below take precedence wherever the two disagree: in particular this skill's `**blocker:**` / `**suggestion:**` / `**question:**` labels replace caveman-review's `🔴 bug:` / `🟡 risk:` / `🔵 nit:` / `❓ q:` prefixes, and the "describe the problem, not the fix" rule replaces its `location, problem, fix` format.
-
 - Label everything: use `**blocker:**`, `**suggestion:**`, or `**question:**` — exactly these labels, no others
 - **Action-first imperative** — start with what to do: "inline `X` in `Y`", "drop test suite for `X`", "remove caching based on Z". Never start with the subject ("X is only used once...").
+- **No throat-clearing** — cut the wind-up openers: "I noticed that...", "It seems like...", "You might want to consider...", "This is just a suggestion but...". The label already says it's a suggestion; the finding already says what you noticed. Open on the substance.
+- **Don't restate what the line does** — the author can read their own diff. The finding is what's wrong with it, not a paraphrase of it.
 - **Soft hedging on suggestions is natural** — "there's no need to X", "I suppose this can also be simplified" are valid alternatives to the imperative. Match the weight of the language to the weight of the finding.
 - **Use "given" as the rationale connector** — not em-dash, not "which", not "because". Example: "inline `getMcpSparkHeaders` in `getTools` given this is only used once and doesn't encompass any complex logic."
 - **Two-paragraph structure for longer findings** — short action title on the first line, blank line, then the explanation. Example:
@@ -153,13 +153,14 @@ Use the `caveman-review` skill to write the individual findings — it keeps eac
 - **Don't sprinkle line references** — a parenthetical `(Check \`file:line\`)` tagged onto every claim is noise. Name a location only when it *is* the finding — e.g. the bug lives in one specific function, especially one *outside the diff* — and say it plainly ("the bug is in `_normalize_type_for_storage`"), not as a tag on each sentence. Otherwise let the anchor line speak for itself.
 - **One finding per comment** — don't tack a secondary or adjacent issue onto a comment ("Also, a malformed id 500s..."). Give it its own thread or leave it out; bundling dilutes the finding.
 - **Calibrate severity conservatively** — output that is confusing but still functional is a `**suggestion:**`; something actually broken (loops forever, persists wrong data, regresses behavior) is a `**blocker:**`. Don't inflate.
+- **Terseness has exceptions** — security findings and architectural disagreements don't compress into a one-liner. A CVE-class bug needs the full explanation and a reference; disagreeing with an approach needs the rationale, or it reads as taste. Write those out in full and stay terse everywhere else.
 - **Write as a teammate, first person plural** — "we normalize federal types to `report`; currently they use their own schema" reads better than a formal report. Natural and conversational, matching the team's voice.
-- **Name the thing being dropped** — "drop test suite for `getMcpSparkHeaders`" not "drop this suite".
+- **Name the thing being dropped** — "drop test suite for `getMcpSparkHeaders`" not "drop this suite". Exact symbol, function, and variable names, in backticks, every time.
 - When flagging an AC violation, quote the AC text directly
 - When flagging a coding standards violation, link the standard
 - Ask `**question:**` when you want to understand the rationale behind a decision — not to demand a change, but to flag something that needs explanation
 - Do not summarize what the PR does — that's not a review
-- Do not add filler or praise unless something is genuinely exceptional
+- Do not add filler or praise unless something is genuinely exceptional — and if it is, say it once at the top, never per comment ("Great work!", "Looks good overall but...")
 - Do not pad findings with explanations of what is correct — only flag what is wrong or improvable
 
 ---
