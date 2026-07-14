@@ -22,10 +22,12 @@ The team runs a stacked release flow (`develop` → `release/qa` → `master`/`m
    - base `release/qa` → **Warmfix** (see the Warmfix section)
    - base `master` / `main` → **Hotfix** (see the Hotfix section)
    - the PR reverts a merge *because something bad shipped* → **Revert / incident** (see that section)
-   - the PR undoes an earlier revert to re-land deliberately-held-back work (e.g. a hotfix revert whose hold period is now over) → **Standard PR, minimal body**. This isn't an incident; there's no blast radius to report. State what's being re-landed and why it was held back in one `Summary` bullet, and stop — don't reach for the incident template just because `git revert` is involved.
+   - the PR undoes an earlier revert to re-land deliberately-held-back work (e.g. a hotfix revert whose hold period is now over) → **Standard PR, minimal body**. This isn't an incident; there's no blast radius to report. State what's being re-landed and why it was held back in a one-sentence `Summary`, and stop — don't reach for the incident template just because `git revert` is involved.
    - the PR only exists to promote another PR up the stack, or to mirror a change in the sibling repo → **Companion** (terse body, see below)
 
-3. **Detect companions.** A change usually lands as a chain: `develop` PR ↔ `master`/`main` PR ↔ `release/qa` PR, and spark ↔ spark-mcp often move together. Look for the sibling PR (`gh pr list --search "GS-XXXX"` in this repo and the sibling repo) and link it. One PR in the chain carries the **full** description; the rest are terse and point to it.
+3. **Detect companions — and be strict about the word.** A *companion* is a PR that has to run **at the same time** as this one for the change to work, in practice the `spark` ↔ `spark-mcp` pair you'd run together locally. Search the sibling repo (`gh pr list --search "GS-XXXX"`) for that, and only that, when deciding whether `## Companion changes` exists.
+
+   Everything else is a **chain**, not a companion: a `develop` PR promoted to `master`/`release/qa`, or a sibling PR stacked on the same base branch. Chains still matter (one PR carries the **full** description, the rest are terse and point to it — see the stacked body below), but a chain link never earns a `## Companion changes` section. When a stacked sibling is worth naming, it goes in `## Notes`.
 
 4. **Draft the title and body.** Use the title conventions and the section templates below. Match the tone rules. Keep it lean.
 
@@ -46,7 +48,7 @@ If there's no Jira key (infra bump, config fix, conflict resolution), a plain de
 
 ## Standard PR body
 
-**Default to the minimal body.** The reviewer reads the diff — the PR description is the one thing the diff can't tell them, not a prose mirror of it. For most PRs that is: the Jira link, a one-line Summary of the core behavioral change, and bare companion links. Everything else (`Why`, `Testing Steps`, `Notes`, per-item enumerations) is *earned* by having something the diff doesn't already convey. When in doubt, leave it out. A reviewer skimming a 4-line description is the goal, not a thorough one.
+**Default to the minimal body.** The reviewer reads the diff — the PR description is the one thing the diff can't tell them, not a prose mirror of it. For most PRs that is: the Jira link and a one-or-two-sentence Summary of the core behavioral change. Everything else (`Why`, `Testing Steps`, `Notes`, `Companion changes`) is *earned* by having something the diff doesn't already convey. When in doubt, leave it out. A reviewer skimming a 4-line description is the goal, not a thorough one.
 
 The minimal body that fits most changes:
 
@@ -55,19 +57,18 @@ The minimal body that fits most changes:
 https://govspend.atlassian.net/browse/GS-XXXXX
 
 ## Summary
-- <one line: the core behavioral change, reader's POV>
-
-## Companion changes
-- <bare URL to each sibling PR>
+<one or two sentences: the core behavioral change, reader's POV>
 ```
 
 Grow from there **only** when a section carries information the diff/summary doesn't:
 
-- **`## Summary`** — usually one line. Add a second bullet only for a genuinely separate behavior change, never to restate what the diff shows (exact config values, the list of files, per-env repetition, a guard tweak). "`WORKOS_RESOURCE_URL` now accepts a comma-separated list of audiences" — not three bullets enumerating each env's new URL.
-- **`## Why`** — one or two sentences, only when the motivation isn't obvious from the Summary. Justify a removal, a revert, a non-obvious approach, or a cross-repo/deploy dependency a reviewer would otherwise miss. Link the evidence (Grafana/Kibana/Axiom, a Slack thread) rather than describing it.
+- **`## Summary`** — **prose, not bullets.** One or two sentences, present-tense and behavioral. Don't bullet a single item, and don't split one change across bullets. Add a second sentence only for a genuinely separate behavior change, never to restate what the diff shows (exact config values, the list of files, per-env repetition, a guard tweak). "`WORKOS_RESOURCE_URL` now accepts a comma-separated list of audiences" — not three bullets enumerating each env's new URL. Resist re-explaining the mechanism: "each selection stores an `agencyId` instead of text the user typed" is diff-visible detail, "the three tiers are independent: none narrows or gates another" is not.
+- **`## Why`** — one or two sentences, only when the motivation isn't obvious from the Summary. Justify a removal, a revert, a non-obvious approach, or a cross-repo/deploy dependency a reviewer would otherwise miss. Link the evidence (Grafana/Kibana/Axiom, a Slack thread) rather than describing it. Background the reviewer doesn't need to *act* on isn't a Why — history that lives in the ticket or a call belongs in the ticket.
 - **`## Testing Steps`** — only when verification is non-trivial or needs a specific fixture/setup. Omit them for small, self-evident changes; vague steps a reviewer could guess are pure noise. Link the exact fixture (a bidDetails URL, a saved search, an env). For multi-service setups, break Setup into `### Setting up API` / `### Setting up MCP` subsections.
-- **`## Companion changes`** — bare URLs, one per line. Don't annotate them ("must deploy after", "API-side mirror of #N"); if a dependency genuinely matters, it belongs in one sentence of `Why`, not tacked onto every link.
-- **`## Notes`** — caveats or out-of-scope items with a follow-up ticket, only when they'd actually surprise a reviewer.
+  - **A step is a command or an action, never an explanation.** ``run `yarn build && yarn init:db` `` — not that command plus a sentence on what `init:db` re-applies and what breaks without it. If a prerequisite has a reason, the reason is the reviewer's business only when it changes what they *do*; otherwise cut it. Trust the reader to run the command.
+  - **Don't paste setup scripts, seed data, or fixtures into the body**, not even folded in a `<details>`. State the prerequisite in one line ("`federalAgencyType` is unpopulated until GS-3854 lands, so seed it locally or the pickers are empty") and stop. If a script is genuinely needed to test, that's a signal it should be committed or shared out-of-band, not inlined in the description.
+- **`## Companion changes`** — **only for a true companion: a PR that must run *simultaneously* with this one, typically the `spark` ↔ `spark-mcp` pair you'd have to run together locally to see the change work.** That's it. A sibling PR that merely shares a base branch, a stacked PR earlier in the same chain, or a PR you happen to depend on is **not** a companion, and the section must be omitted entirely. When a stacked/sibling PR is worth mentioning at all (e.g. it explains commits bleeding into your diff), that's a `## Notes` line, not a Companion link. Bare URLs, one per line, no annotations.
+- **`## Notes`** — caveats or out-of-scope items with a follow-up ticket, only when they'd actually surprise a reviewer. This is also where cross-PR context lives ("carries #N's commits, they drop out once it merges").
 
 Other sections that show up when relevant: `## Demo` (a Slack recording link), `## Screenshots` (before/after images), `## Ref` (external docs that justify the change), `## Test plan` (a checklist for infra/build PRs).
 
@@ -134,9 +135,9 @@ Prefer a clean full revert over a partial one and say why. Mark production-affec
 - **First person, plain, a little casual.** "I suspect the cache is causing this", "so I'm putting it back", "don't worry about that". You're a teammate leaving notes, not a changelog bot.
 - **Backtick everything technical:** branches, env vars, params, file names, package names, function names. `` `WORKOS_RESOURCE_URL` ``, `` `release/qa` ``, `` `@mastra/core` ``.
 - **Link the evidence, don't describe it.** A Grafana/Kibana/Axiom link for a logging-motivated change, a Slack thread for a demo, the exact fixture URL for a repro, the sibling PR for a companion. A claim with a link beats a paragraph without one.
-- **Summary bullets are present-tense and behavioral** — what the PR does for the reader, not a file-by-file list. "WorkOS JWTs without an encrypted API key are forwarded directly to Spark as Bearer tokens", not "edited auth_provider.py".
+- **The Summary is present-tense, behavioral prose** — what the PR does for the reader, not a file-by-file list and not a bullet list. "WorkOS JWTs without an encrypted API key are forwarded directly to Spark as Bearer tokens", not "edited auth_provider.py".
 - **Explain the why for anything non-obvious** — a removal, a revert, a workaround, an approach that competes with the existing pattern. Skip the Why section when the Summary already makes it obvious.
-- **Keep it lean, and lean harder than feels natural.** Omit empty sections entirely. A four-line PR (Jira + one Summary line + companion links) is the common case, not the exception. Reviewers read the description as a quick orientation, then read the diff. Length reads as noise.
+- **Keep it lean, and lean harder than feels natural.** Omit empty sections entirely. A three-line PR (Jira + a one-sentence Summary) is the common case, not the exception. Reviewers read the description as a quick orientation, then read the diff. Length reads as noise.
 - **Never restate what the diff already shows.** The exact new config values, the list of changed files, the per-env repetition of the same change, a one-line guard tweak — the reviewer sees all of that in the diff. Say the *behavior* once and stop. If a bullet's content is recoverable by reading the diff, cut it.
 - **⚠️** is for genuine warnings (unrelated changes, production impact, merge-order hazards), used sparingly.
 - **No em-dashes as sentence punctuation** — use commas, periods, or parentheses. **Never** add a `Co-Authored-By` trailer or an AI-generated footer.
@@ -148,5 +149,5 @@ Prefer a clean full revert over a partial one and say why. Mark production-affec
 - Don't duplicate a long description across every PR in a stack — one carries it, the rest point to it.
 - Don't omit the hotfix disclaimer when the `master` branch carries develop bleed, and don't include it when the branch is clean.
 - Don't invent Testing Steps you can't ground in the diff or the ticket — vague steps are worse than none.
-- Don't leave companion links out. A stacked PR without its chain links is the most common way these get merged in the wrong order. Keep them as bare URLs, not annotated.
+- Don't add a `## Companion changes` section for a PR that isn't a true companion (one that must run *simultaneously*, e.g. the `spark`/`spark-mcp` pair). A stacked or same-base sibling is not a companion. When a real companion exists, don't leave it out and don't annotate it.
 - Don't pad a small PR with `Why` / `Testing Steps` / `Notes` it doesn't need, and don't re-describe the diff in prose. If the change is self-evident, Jira + a one-line Summary + companion links is the whole body.
