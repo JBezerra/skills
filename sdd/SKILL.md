@@ -62,7 +62,7 @@ Once the loop for each task begins:
 1. **Announce the task.** A short preamble naming which task you're starting and its acceptance criteria, before touching any code, so the user always knows what's coming.
 2. **Implement it fully, but do not commit.** Write the code, run whatever local checks the repo's conventions call for (build, lint, tests), get it to a state you'd consider done against the task's AC. Stop there. Do not create a git commit and do not move on to the next task.
 3. **Hand it back for review.** Tell the user the task is implemented and ready to look at. Wait.
-4. **On approval, commit.** Once the user is satisfied, commit exactly what's in the working tree at that point, scoped to this task, following whatever commit conventions the repo documents (message style, sign-off lines, hook usage). Then loop back to step 1 for the next task.
+4. **On approval, commit.** Once the user is satisfied, commit exactly what's in the working tree at that point, scoped to this task. Use the `caveman-commit` skill to write the message, then apply whatever the repo's own commit conventions require on top (message style, sign-off lines, hook usage) — the repo's documented conventions win wherever the two disagree. Then loop back to step 1 for the next task.
 
 **Do not skip ahead through multiple tasks' implement-and-commit cycles unless the user explicitly says to.** The pause after every implementation is the whole point, it's cheap for the user to say "keep going through the rest" if that's genuinely what they want, but the default must never assume it.
 

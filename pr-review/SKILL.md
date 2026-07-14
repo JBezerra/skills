@@ -136,6 +136,8 @@ Don't make extra API calls when the same data is already available from a call a
 
 ## Comment style
 
+Use the `caveman-review` skill to write the individual findings — it keeps each one terse and actionable rather than padded with throat-clearing. The rules below take precedence wherever the two disagree: in particular this skill's `**blocker:**` / `**suggestion:**` / `**question:**` labels replace caveman-review's `🔴 bug:` / `🟡 risk:` / `🔵 nit:` / `❓ q:` prefixes, and the "describe the problem, not the fix" rule replaces its `location, problem, fix` format.
+
 - Label everything: use `**blocker:**`, `**suggestion:**`, or `**question:**` — exactly these labels, no others
 - **Action-first imperative** — start with what to do: "inline `X` in `Y`", "drop test suite for `X`", "remove caching based on Z". Never start with the subject ("X is only used once...").
 - **Soft hedging on suggestions is natural** — "there's no need to X", "I suppose this can also be simplified" are valid alternatives to the imperative. Match the weight of the language to the weight of the finding.
