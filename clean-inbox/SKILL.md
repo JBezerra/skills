@@ -83,6 +83,20 @@ For each thread, decide: **keep unread**, **mark as read**, or **unknown**.
    feedback, not noise, even though it's technically an "approved"
    notification.
 
+10. **Jira work assignments** — `jira@govspend.atlassian.net` where the
+    subject matches `"assigned GS-XXXXX to you"`. Someone is handing the
+    user a specific piece of work, unlike automated field/status updates.
+
+11. **Figma comment mentions** — sender is a
+    `comments-*@email.figma.com` address, subject like "@X mentioned you
+    in <file>". A designer tagging the user on mocks — same weight as a
+    Jira or Notion mention.
+
+12. **Google Drive shares** — sender is
+    `drive-shares-dm-noreply@google.com`, subject like "Spreadsheet
+    shared with you" / "<Doc> shared with you". A colleague deliberately
+    shared a document and likely wants the user's input.
+
 ---
 
 ### MARK AS READ — noise the user doesn't want to see
@@ -109,11 +123,17 @@ These are patterns that should be silently cleaned up:
   - CI status changes
 
 - **Automated Jira updates** — `jira@govspend.atlassian.net` where the
-  subject does NOT contain `"mentioned you on"`. Status transitions,
-  sprint changes, field updates by Automation for Jira are noise.
+  subject contains neither `"mentioned you on"` nor `"assigned GS-XXXXX
+  to you"`. Status transitions, sprint changes, field updates by
+  Automation for Jira are noise.
 
-- **Calendar invites** — subject starts with `Invitation:` or
-  `Updated invitation:`. The user checks their calendar directly.
+- **Jira due-work digests** — `jira@govspend.atlassian.net`, subject
+  like "José Bezerra, you have work due in Jira". The user tracks due
+  dates in Jira directly.
+
+- **Calendar invites** — subject starts with `Invitation:`,
+  `Updated invitation:`, or `Accepted:` (and other RSVP responses). The
+  user checks their calendar directly.
 
 - **Newsletters & developer digests** — `support@codepen.io`,
   `announcements@figma.com`, `info@mail.zapier.com`, and similar
