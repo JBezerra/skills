@@ -4,9 +4,9 @@ description: >
   Analyzes the day-over-day diff of the user's personal brain-dump file
   (~/source/@cron/daily-brain/📍.md) — a mix of work tasks, ideas, and personal/life
   notes organized as a rolling Kanban. Produces a blended daily analysis
-  covering progress made, new ideas/intentions captured, stale items that
-  keep rolling over unresolved, and light coaching-style reflection
-  questions. Trigger whenever the user says "/daily-brain", "run my daily
+  covering where the day diverged from the plan, pattern-level insights,
+  a priority order for today, stale items that keep rolling over
+  unresolved, and light coaching-style reflection questions. Trigger whenever the user says "/daily-brain", "run my daily
   brain analysis", "diff my notes file", or similar. Also the target of a
   daily 7am cron job — when invoked non-interactively (no user turn to
   respond to), just perform the full run and finish; there is no one to
@@ -20,39 +20,67 @@ short daily report that blends accountability tracking, idea surfacing,
 and reflective coaching — the way a good 1:1 partner would look at this
 file with the user.
 
-**This is a report the user reads every morning — make it fast to read.**
-Aim for a 2-3 minute read, not 5. The value is in the signal, not the
-word count: keep every real insight, but say it in the fewest, plainest
-words (see "How to write it" below).
+**This is a report the user reads every morning. It should take one
+minute to read.** The whole report is ~25 lines. If it's longer, you're
+restating the user's own file back to him instead of telling him
+something he doesn't know.
 
-Cut connective/hedging phrases that add no information ("worth noting",
-"it's worth", "this represents"). Never cut something *substantive* just
-because it repeats: if a stale item, a recurring pattern, or an open
-question from a prior day is still unresolved, say it again. Persistent
-unresolved things are exactly what this skill exists to keep in front of
-the user — say it concisely, but say it. Only drop a callback if it's
-been explicitly resolved or the user has said to stop flagging it (check
-`log.txt`). When in doubt, include it; the user will tell you if
-something isn't worth repeating.
+**Never tell the user what he already knows.** He wrote `📍.md`. He
+checked those boxes. Listing his tasks back to him is worth nothing. Every
+line must add something he couldn't get by rereading his own file: a
+pattern across days, a contradiction, a consequence, a ranking, a
+question.
+
+### The two rules that matter most
+
+**1. Say each thing exactly once.** A fact, item, or pattern appears in
+ONE section of the report and nowhere else. If the quinzenal is the
+subject of an Insight, it does not also appear in Priority order,
+Cleanup, or Reflection. Pick the section where it lands hardest and leave
+it there. Before writing the file, reread it and delete every second
+mention. Recent reports said the same thing three times in three
+sections — that is the single worst failure mode of this skill.
+
+This is about repetition *within one report*. Repeating across *days* is
+different and still correct: if a stale item or unresolved pattern is
+still live today, say it again today. Only drop a cross-day callback if
+it's been resolved or the user said to stop flagging it (see Standing
+corrections below).
+
+**2. One sentence per bullet.** Not three. Not a sentence plus an
+explanation plus a justification. If a bullet needs a second sentence to
+survive, it gets one, and that's the ceiling. Reflection is the only
+exception (2-3 sentences plus the question).
 
 ### How to write it
 
 Plain and short. Write the way you'd explain it to a friend, not the way
 a consultant writes a slide deck.
 
-- **Short sentences, one idea each.** If a sentence stacks three clauses
-  with dashes, split it into separate sentences.
 - **Everyday words.** No jargon, no abstract metaphors, no invented
   labels. Say "it's hard to get started on it", not "it's an
   activation-energy problem". Say "Today got shorter", not "Today
   decongested". Say "nothing makes you open it", not "no forcing
   function". If a smart friend would have to reread a sentence, rewrite
   it.
+- **No rhetorical flourish.** Drop the writerly closers ("Same outcome,
+  opposite mechanism", "just through different doors"). They read as
+  clever, not useful. State the thing and stop.
+- **Cut hedging and connective filler**: "worth noting", "it's worth",
+  "this represents", "that said".
 - **Prefer commas and periods over em-dashes.** An occasional dash is
   fine; never stack two or three in one sentence.
 - **Concrete over clever.** Name the actual task and the actual number of
   days. Describe the behavior, not the psychology theory behind it, even
   when the pattern is real.
+
+### Standing corrections
+
+Things the user has told this skill to stop doing. These are permanent.
+
+- **The all-caps LinkedIn note at the top of `📍.md` stays.** Never flag
+  it in Cleanup, never ask about the missing header, never mention it at
+  all.
 
 The file is the user's external brain: work tasks (GovSpend/AIP), a side
 project (Mergi), and personal/family notes, organized into a `Done` log,
@@ -145,7 +173,7 @@ hard to push:
 - **Saturday/Sunday:** Don't flag GovSpend/AIP work tasks in Today/
   Tomorrow as stale or overdue just because they weren't touched — that's
   expected, not a gap. Personal/Mergi/health items still count normally.
-  Next actions (Step 4) should be personal/Mergi-only on weekends, not
+  Priority order (Step 4) should be personal/Mergi-only on weekends, not
   "catch up on work."
 - **Monday:** The most recent Done-log entries span the weekend gap —
   don't treat Friday→Monday as a stale streak. This is also when
@@ -215,7 +243,7 @@ heading:
 - <what the user said>
 ```
 
-Use this when ranking Next Actions in Step 4, today and in future runs.
+Use this when building Priority order in Step 4, today and in future runs.
 
 **Skip this step entirely on headless/cron runs** — there's no one to
 ask. On those runs, rely on whatever priority notes already exist in
@@ -225,52 +253,81 @@ ask. On those runs, rely on whatever priority notes already exist in
 
 ## Step 4 — Build the analysis
 
-Every section below is a bullet list, not prose — one line per bullet,
-no filler sentences. But favor completeness of insight over brevity: if
-there's a genuine pattern, a persistent unresolved item, or something
-worth connecting across days, include it even if the section runs long.
-If a section has nothing to say, omit the heading — don't write "nothing
-to report."
+Every section is a bullet list, not prose. One sentence per bullet (see
+"The two rules that matter most" above). If a section has nothing to say,
+omit the heading — don't write "nothing to report." Omitting sections is
+normal and good; a 12-line report on a quiet day is a success, not a
+failure.
+
+Assign each fact to exactly one section before you write. If two sections
+both want the quinzenal, pick one.
 
 Produce these sections, in this order:
 
 ### 1. Progress
-What moved from unchecked to checked (`- [ ]` → `- [x]`) since yesterday.
-Name the actual task. Group by Work/Mergi/Pessoal if there's enough to
-group.
+**Divergence only.** Compare what the file said the user planned (times,
+training days, the week's stated intentions from Monday's planning) against
+what actually got checked off. Report only where they differ, in 2-4 short
+lines: what slipped, what moved instead, what got struck through. Close
+with one line if the rest matched ("Everything else went as planned").
+
+Do NOT list completed tasks. He checked those boxes himself. If nothing
+diverged, omit the section entirely.
+
+Example of the whole section, at the right length:
+
+```
+Planned Jiu-Jitsu 19h15 + cardio at 6h.
+Got: cardio at 18h, wake-at-6h struck through.
+Everything else went as planned.
+```
 
 ### 2. Insights
-**The section where you actually think, not just report.** Given
-everything you know about the user (the "how the user actually works"
-context above, the last 7 days of analyses, `log.txt`, and today's
-diff), what pattern, connection, or concern is worth naming? This is
-different from Next Actions (concrete tasks) and Reflection (one
-question) — this is your read of what's going on, stated directly, even
-if it's not actionable today. Examples of what belongs here: a pattern
-repeating across the week that the user hasn't named themselves, a
-tension between two stated goals, a connection between something in
-Today and something in This Week/Backlog, a read on whether a stale item
-looks like early cascade vs. genuinely dropped. Keep it to the 2-3
-strongest reads, each a short bullet in plain words — not four long ones.
-Skip it if you genuinely have nothing beyond the obvious; don't
-manufacture an insight to fill the section.
+**The section that carries the report.** Everything else is scaffolding
+around this. Given the "how the user actually works" context above, the
+last 7 days of analyses, `log.txt`, and today's diff, what do you see that
+he doesn't?
 
-### 3. Next actions
-A ranked list of 3-5 concrete things to do next, ordered by priority.
-Not a restatement of everything in Today/Tomorrow — a genuine cut: given
-what moved, what's stale, what's new, today's Insights, any priorities
-noted in `log.txt` (Step 3), and the day of the week, what should the
-user actually act on next? Each bullet is one action, specific enough to
-start immediately (not "work on Mergi" but "fix the split-diff syntax
-highlight bug"). Weekday-aware: on weekends this list is personal/
-Mergi-only, never GovSpend/AIP work.
+This is analysis from someone watching his patterns, not a summary. What
+belongs here: a pattern repeating across the week he hasn't named himself,
+a tension between two stated goals, a consequence he hasn't connected, a
+read on whether a stale item is day 1 of the cascade or genuinely dead.
 
-### 4. New ideas
-New `|>` thoughts, new bullets under Tomorrow/This Week/Backlog, or new
-freeform notes in `1:1 Notes`. One line each. Only note a connection to
-an existing idea if it's genuinely non-obvious — don't force it.
+What does NOT belong here: anything he could see by rereading his own file.
+"Mergi got narrowed" is not an insight, it's a diff. "Mergi got narrowed
+the same week you picked AI-Native, and it's the only thing on the board
+marked in progress" is an insight.
 
-### 5. Stale
+2-3 bullets, the strongest ones only. One sentence each, two if it truly
+needs it. Skip the section if you have nothing beyond the obvious — a
+manufactured insight is worse than no section.
+
+### 3. Priority order
+**Rank what's already on his board. Don't invent tasks and don't restate
+them with explanations.** He knows what the tasks are. What he doesn't
+know is which one to open first.
+
+A numbered list of what's in Today, ordered. Name the item in a few words,
+then a clause on why it's in that slot (time-boxed, blocks something else,
+about to go stale, cheap to close). One line each, 3-5 lines total. Cut
+anything from Today that shouldn't get attention today, and say so in one
+line if the cut is interesting.
+
+Weekday-aware: on weekends this is personal/Mergi-only, never GovSpend/AIP.
+
+Example of the right shape and length:
+
+```
+1. Jiu-Jitsu 18h15 — fixed time, everything else bends around it.
+2. GS-14620 — only concrete work item in Today.
+3. Mergi AI-First Roadmap — day 2 keeps it alive.
+4. Levar carro em oficina — closes Tuesday's quote.
+
+Skipping the MCP-thoughts block: it's a thinking task and will eat the
+morning.
+```
+
+### 4. Stale
 Checklist items in Today/Tomorrow unchanged and unchecked across 3+
 snapshots (2 is enough if tagged urgent). One line each, name the item
 and how many days. Skip GovSpend/AIP items here on Mon if the gap is
@@ -279,16 +336,7 @@ here — it's reflection, not a task (see above). Remember not everything
 is logged — phrase these as questions where the item is plausibly
 untracked-but-happening, not flat "you didn't do X."
 
-### 6. Reflection
-**One question, with a short setup.** Two or three plain sentences of
-context, then the single sharpest question. Not a paragraph, not a menu
-of questions. Pick the angle from the diff, a recurring pattern, or
-something worth savoring rather than fixing (see the "how the user
-actually works" context above). Monday gets a little more room since
-that's the weekly reset; other days keep it tight, and some days nothing
-stands out — that's fine, skip it.
-
-### 7. Cleanup (only if genuinely warranted)
+### 5. Cleanup (only if genuinely warranted)
 Look across the *whole document*, not just the Done log, for things that
 should be tidied up. One-line suggestions for:
 
@@ -301,17 +349,48 @@ should be tidied up. One-line suggestions for:
 
 Phrase every suggestion as a question the user can act on ("remove X?",
 "move X to Backlog?", "archive last week's Done block?") — never edit
-`📍.md` directly. This is different from Stale (Step 5): Stale is about
-active items you should *do*; Cleanup is about clutter you should *clear*.
-Skip the section if the document is already tidy.
+`📍.md` directly. This is different from Stale: Stale is about active
+items he should *do*; Cleanup is about clutter he should *clear*. Skip the
+section if the document is already tidy, and never list something here
+that a stale item or an insight already covered.
+
+### 6. Reflection
+**One question, with a short setup.** Two or three plain sentences of
+context, then the single sharpest question. Not a paragraph, not a menu
+of questions. Pick the angle from the diff, a recurring pattern, or
+something worth savoring rather than fixing (see the "how the user
+actually works" context above).
+
+The setup must be new context, not a recap of an Insight. If the sharpest
+question is about something already covered above, either ask it there and
+drop this section, or find a different angle. Monday gets a little more
+room since that's the weekly reset; other days keep it tight, and some
+days nothing stands out — that's fine, skip it.
 
 ---
 
-## Step 5 — Write the analysis file
+## Step 5 — Cut it down, then write the analysis file
 
-Write the report to `~/source/@cron/daily-brain/analysis/YYYY-MM-DD-analysis.md`
-(today's date). Plain markdown, the section headers above, nothing else
-— no preamble, no closing summary restating what's above.
+Draft the report, then edit it before writing. Every past run of this
+skill has been too long and too repetitive, so treat this pass as
+mandatory, not optional polish.
+
+Go through the draft and:
+
+1. **Delete every second mention.** For each item or pattern, find all the
+   places it appears. Keep the strongest one, cut the rest. No exceptions.
+2. **Cut every bullet to one sentence.** If it's three sentences, two of
+   them are justification the user didn't ask for.
+3. **Delete any line that only restates `📍.md`.** If he'd learn the same
+   thing by rereading his own file, it goes.
+4. **Delete the clever closers.** Any sentence that exists for rhythm
+   rather than information.
+5. **Count the lines.** Over ~25 and you haven't cut enough. Go again.
+
+Then write the report to
+`~/source/@cron/daily-brain/analysis/YYYY-MM-DD-analysis.md` (today's date).
+Plain markdown, the section headers above, nothing else — no preamble, no
+closing summary restating what's above.
 
 If running interactively inside a sandboxed Claude Code session, prefer
 writing via Bash (e.g. `cat > file <<EOF ... EOF`) over the Write tool —
