@@ -226,6 +226,19 @@ the staleness check in Step 4.
 
 ---
 
+## Step 2.5 — Fetch Readwise digest data
+
+Call two Readwise MCP tools before building the analysis:
+
+1. `reader_list_documents` with `location="new"`, `limit=5`, `response_fields=["title","author","reading_time","site_name"]` — note the total count returned and pick the first document as the suggested read.
+2. `readwise_search_highlights` with `vector_search_term="Marcus Aurelius Meditations stoic discipline"` — from the results, pick ONE highlight that connects to something in today's diff or themes. Don't just return the first result; pick the one that lands.
+
+Store both results; you'll use them in sections 7 and 8 of the analysis.
+
+If either MCP call fails, skip that section silently — don't surface the error in the report.
+
+---
+
 ## Step 3 — Ask about priorities (interactive runs only)
 
 If a human is actually present to respond in this session (not a
@@ -366,6 +379,12 @@ question is about something already covered above, either ask it there and
 drop this section, or find a different angle. Monday gets a little more
 room since that's the weekly reset; other days keep it tight, and some
 days nothing stands out — that's fine, skip it.
+
+### 7. Leitura
+Two lines, no more. First line: how many articles are waiting in the inbox. Second line: "Próximo: [título] — [autor] ([reading_time])" using the first document from Step 2.5. Skip the section if the MCP call failed.
+
+### 8. Lembrete Estoico
+One Marcus Aurelius highlight as a blockquote, no commentary, no attribution line (it's always Marco Aurélio). Pick from Step 2.5. Skip if the call failed.
 
 ---
 
