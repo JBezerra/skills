@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "personal-skills",
-      "description": "Jose Bezerra's personal skills: PR review, PR authoring, inbox cleanup, Jira ticket authoring, ticket/RFC-to-implementation planning, daily brain-dump analysis, personal coding-style guidelines, and MCP QA journey testing",
+      "description": "Jose Bezerra's personal skills: PR review, PR authoring, inbox cleanup, Jira ticket authoring, ticket/RFC-to-implementation planning, daily brain-dump analysis, personal coding-style guidelines, MCP QA journey testing, and writing in his own voice",
       "source": "./",
       "strict": false,
       "skills": [
@@ -21,7 +21,8 @@
         "./sdd",
         "./daily-brain",
         "./coding-guidelines",
-        "./gs-qa-mcp"
+        "./gs-qa-mcp",
+        "./write-like-me"
       ]
     }
   ]
