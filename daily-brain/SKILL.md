@@ -381,7 +381,7 @@ room since that's the weekly reset; other days keep it tight, and some
 days nothing stands out — that's fine, skip it.
 
 ### 7. Leitura
-Two lines, no more. First line: how many articles are waiting in the inbox. Second line: "Próximo: [título] — [autor] ([reading_time])" using the first document from Step 2.5. Skip the section if the MCP call failed.
+Two lines, no more. First line: how many articles are waiting in the inbox. Second line: "Leitura sugerida: [título] — [autor] ([reading_time])" using the first document from Step 2.5. Skip the section if the MCP call failed.
 
 ### 8. Lembrete Estoico
 One Marcus Aurelius highlight as a blockquote, no commentary, no attribution line (it's always Marco Aurélio). Pick from Step 2.5. Skip if the call failed.
