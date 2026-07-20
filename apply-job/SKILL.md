@@ -27,9 +27,14 @@ must trace to `roles.json` or the story banks. Rephrasing is fine. A number that
 is not in the source files is not. If the posting wants something José does not
 have, say so and let him decide how to handle it.
 
-**Never guess a personal fact.** Salary expectation, work authorisation, visa
-status, notice period, relocation, start date, referral source. These are not in
-any file. Ask him.
+**Stay out of the logistics fields.** Desired pay, date available, address, city,
+state, ZIP, country, work authorisation, visa status, notice period, relocation,
+referral source. José fills these in himself at submit time. Do not ask him for
+them, do not draft them, do not put them in a table for him to review. Your job
+is only the parts where his story is the answer: the open-ended questions, the CV,
+and a cover letter when one is asked for. List logistics fields in `questions.md`
+only as a bare inventory of what the form will ask, with no values and no
+follow-up questions.
 
 **Ask before acting.** Confirm the parsed company and role before creating
 anything on disk. Confirm the question list before drafting. Show him the
@@ -73,7 +78,7 @@ the snapshot rather than assuming the raw HTML holds the text.
 Extract: company, role title, team, location, work arrangement, seniority,
 requirements, responsibilities, compensation if stated.
 
-**Stop and confirm with José**: the company, the role, and the slug you intend to
+**File name**: the company, the role, and the slug you intend to
 use (`<company>-<role-kebab>`, e.g. `anthropic-staff-software-engineer`). The slug
 names both the `.tex` and the PDF, so getting it right now avoids a rename later.
 
@@ -89,8 +94,12 @@ Workday.
 
 Navigate to the form and read it. Take a snapshot and enumerate every field:
 label, whether it is required, any stated word or character limit, and the field
-type. You want the free-text questions, but note the personal-fact fields too
-(salary, authorisation, notice) because those become questions for José.
+type. What you are hunting for is the **free-text questions**. Logistics fields
+get listed as a bare inventory and nothing more, per the hard rule above.
+
+Some forms have no open-ended questions at all. BambooHR postings often do not.
+When that happens, say so plainly and move on. The CV becomes the whole
+deliverable. Do not manufacture questions to have something to answer.
 
 If the form needs a login, or the site blocks the browser, or the questions are
 simply not reachable: **say so plainly and ask José to paste them.** Do not
@@ -100,15 +109,20 @@ answers to questions nobody asked.
 Write `questions.md`: every question, numbered, with its stated limit and whether
 it is required.
 
-**Stop and confirm.** Show him the list. Ask about every personal fact the form
-needs and the banks cannot supply. Ask anything genuinely ambiguous about the
-role. This is the moment to gather what the drafting step will otherwise guess.
+**Stop and confirm.** Show him the open-ended questions and ask anything
+genuinely ambiguous about the role or how he wants to be positioned. Do not ask
+about salary, availability, or address. Those are his to fill at submit time.
 
 ## Phase 3: Tailor and draft
 
 Now run the workflow. It tailors the CV and drafts every answer in parallel, then
 fact-checks each answer against the source files with a separate adversarial
 agent.
+
+Pass `args` as a real object. A JSON-encoded string destructures to `undefined`
+on every field, and the agents then work from the literal text "undefined" and
+burn a whole run before failing. The script guards against this now, but the
+right call site still matters.
 
 ```
 Workflow({
@@ -138,7 +152,7 @@ The workflow's CV agent already ran `make`. Verify the PDF exists and the page
 count did not grow, then copy it in:
 
 ```sh
-cp ~/source/latex-resume/build/Jose_Bezerra_Resume_<slug>.pdf \
+cp ~/source/latex-resume/build/<slug>.pdf \
    ~/source/@workflows/apply-job/applications/<company>/<slug>.pdf
 ```
 
@@ -156,7 +170,6 @@ Tell him:
 - **Any gap** between the posting and his actual experience. He needs to know
   where he is stretching before an interview, not after.
 - **Any claim the verifier flagged as unsupported**, and what you did about it.
-- **Every question still needing a personal fact from him.**
 - The page count of the CV and whether anything was cut to fit.
 
 Then stop. He submits. You do not.
