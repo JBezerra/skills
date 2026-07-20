@@ -22,7 +22,8 @@
         "./daily-brain",
         "./coding-guidelines",
         "./gs-qa-mcp",
-        "./write-article"
+        "./write-article",
+        "./apply-job"
       ]
     }
   ]
