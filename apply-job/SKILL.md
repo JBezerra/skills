@@ -87,6 +87,41 @@ Once confirmed, create the folder and write `job-description.md`: the full posti
 text, with a short front-matter block carrying company, role, location, URL, and
 the date captured.
 
+## Phase 1b: Find out what the company actually builds
+
+Do this before any positioning decision. Search the web for the company: what the
+product is, who buys it, what the named product areas are, stage and funding,
+anything shipped recently. Read their own site and any recent posts. A
+`general-purpose` agent is a good fit if it needs more than a couple of fetches.
+
+Then read the posting again for its **product pillars**, the section that lists
+the surfaces or teams the hire could land on. That list tells you what the company
+thinks it is. The job title does not.
+
+**This step exists because of a real failure.** Stable was tailored as a
+generic product role: customer empathy, end-to-end ownership, business context.
+The AI work was deliberately demoted because "Product Engineer" did not sound like
+an AI title. Stable is an AI mail company. Their posting names "Automation & AI,
+LLMs and ML models that route mail, classify documents, extract data, and trigger
+workflows" as one of four product pillars, and the role description talks about
+training a check-detection model. The whole application had to be redone. The
+signal was in the posting the entire time and the title drowned it out.
+
+So: **never derive positioning from the role title.** "Product Engineer" at an AI
+company is a different job from "Product Engineer" anywhere else. Derive it from
+what the company sells and what its pillars say.
+
+Two things come out of this phase:
+
+1. A short `## Company` section appended to `job-description.md`: what they build,
+   who buys it, the product pillars verbatim, stage, and anything that changes
+   how José should be positioned.
+2. A positioning call, stated to José before drafting, in the form "lead with X,
+   support with Y, because their pillars say Z." He corrects it there, which is far
+   cheaper than after a full run.
+
+This phase also feeds "why this company", which the story bank cannot answer alone.
+
 ## Phase 2: Capture the questions
 
 Open-ended questions are almost never in the posting. They live in the
@@ -242,9 +277,17 @@ usually a mistake. The bank has 21 narrative and 19 STAR entries, so there is
 almost always a better fit than a repeat.
 
 **"Why this company".** This is the one question the story bank cannot answer
-alone, because it needs something specific about *them*. Pull it from the posting
-and the company's own material, and if it still reads generic, ask José what
-actually draws him to it. A generic answer here is worse than a short one.
+alone, because it needs something specific about *them*. Pull it from the Phase 1b
+research and the posting. If it still reads generic, ask José what actually draws
+him to it. A generic answer here is worse than a short one.
+
+If he declines to supply a reason and tells you to write one, do not invent a
+feeling and attribute it to him. Derive the connection from `roles.json` instead:
+find the pattern in his actual record that matches what the company builds, and
+say that. For Stable it was automating operational work while a human keeps the
+judgment call, which is genuinely the shape of Omnipresent, AllowMe and Propi.
+That is inference from evidence, and he can confirm or reject it in one read.
+Flag it once as an inference. Do not raise it again after he has heard it.
 
 **Tone.** The story banks note: use "I" not "we", include data points, keep each
 story self-contained. `latex-resume/AGENTS.md` carries the full writing rules and
