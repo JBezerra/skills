@@ -57,6 +57,7 @@ applications/anthropic/
   job-description.md
   questions.md
   application.md                            # questions + final answers
+  changes.txt                               # CV diff vs the canonical resume
   cover-letter.md                           # only if the application asks
   anthropic-staff-software-engineer.pdf     # copy of the built CV
 ```
@@ -189,6 +190,26 @@ Record the draft history under the answer: what each earlier version got wrong a
 why the final one is shaped the way it is. When José pushes back on a later
 application, that history is what stops the same mistake being made twice.
 
+### changes.txt
+
+Write `changes.txt` in the same folder: a bullet list of what the tailored CV
+changed relative to the **canonical** CV, meaning `resume.tex` built from
+`roles.json`, not the previous application's variant. Every application diffs
+against the same baseline, so two of them can be compared side by side.
+
+**Write it with `/caveman`.** Invoke the `caveman` skill for this file only. José
+reads this to see at a glance what was moved, cut, and reworded, and the compressed
+form is faster to scan than prose. The rest of the application folder stays in
+normal English.
+
+Cover, in this order: what the summary now leads with, what got reordered and where
+it moved, what was **cut** and why, and the page count. Cuts matter most. A dropped
+bullet is the thing he is most likely to want back, and the only record that it ever
+existed is this file.
+
+The workflow's resume agent already returns `changes`, `dropped`, and `gaps`. That
+is the raw material. Compress it, do not re-derive it.
+
 Commit the `.tex` in `latex-resume` so the record of what was sent is frozen. The
 `apply-job` folder is not a git repo, so nothing to commit there.
 
@@ -196,6 +217,9 @@ Commit the `.tex` in `latex-resume` so the record of what was sent is frozen. Th
 
 Tell him:
 - What was produced and where.
+- **The contents of `changes.txt`**, in the reply itself, not just as a file path.
+  This is the CV diff against the canonical resume, in `/caveman` form. He should
+  not have to open a file to see what changed on his own CV.
 - **Any gap** between the posting and his actual experience. He needs to know
   where he is stretching before an interview, not after.
 - **Any claim the verifier flagged as unsupported**, and what you did about it.
