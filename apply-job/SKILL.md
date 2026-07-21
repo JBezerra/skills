@@ -146,6 +146,35 @@ Pass absolute paths, and pass `questions` as a real array, not a JSON string.
 The workflow returns `needsUserInput`, `ungrounded`, and `gaps`. Do not bury
 these. They are the parts that need a human.
 
+## Phase 3b: Cut and humanize
+
+The workflow's first draft is always too long and always sounds like an LLM wrote
+it. Do not hand it to José in that state. Run every answer through two passes
+before he sees it.
+
+**Pass 1: cut what the CV already says.** The CV is attached to the application.
+An answer that recites employers, metrics, and project names is telling the
+recruiter what they are about to read anyway, and it burns the only space José
+has to say something the CV cannot. Strip the company names, the headline
+numbers, and the project titles. Keep the reasoning, the motivation, and anything
+that is genuinely not on the page. A first draft that opens "The Lattice
+integration platform I architected synced data across payment gateways at 600M
+monthly requests" is a résumé summary wearing an answer's clothes.
+
+**Pass 2: run `/humanizer`.** Invoke the `humanizer` skill on each drafted
+answer. It catches the tells that make an application read as machine-written,
+and job applications are the highest-stakes place for that to happen. Follow its
+draft, audit, final loop and paste its final version into `application.md`.
+
+The patterns it catches that show up most in these answers:
+
+- **Manufactured punchlines (§31).** Every paragraph ending on a quotable closer.
+  A single one is fine. Three in a row is a tell.
+- **Negative parallelism (§9).** "It's not a latency regression, it's a double
+  charge." "Moving toward the problem, not arriving with it solved."
+- **Aphorism formulas (§32).** "X is that instinct aimed at Y."
+- **Rhetorical openers (§33).** "Straight about the gaps:", "Honestly?"
+
 ## Phase 4: Build and assemble
 
 The workflow's CV agent already ran `make`. Verify the PDF exists and the page
@@ -159,6 +188,16 @@ cp ~/source/latex-resume/build/<slug>.pdf \
 Write `application.md`: each question with its final answer, in form order, with
 word counts so he can check limits at a glance. Flag any answer still awaiting a
 personal fact. Write `cover-letter.md` only if one was requested.
+
+**Write the answers as unwrapped paragraphs.** One paragraph is one long line, no
+hard wrap at 80 columns. José copies these straight into a web textarea, and a
+hard-wrapped paragraph pastes in with the line breaks baked in and looks broken to
+whoever reads it. Wrap the surrounding prose in `application.md` normally. Only the
+answer text itself stays unwrapped.
+
+Record the draft history under the answer: what each earlier version got wrong and
+why the final one is shaped the way it is. When José pushes back on a later
+application, that history is what stops the same mistake being made twice.
 
 Commit the `.tex` in `latex-resume` so the record of what was sent is frozen. The
 `apply-job` folder is not a git repo, so nothing to commit there.
@@ -176,8 +215,17 @@ Then stop. He submits. You do not.
 
 ## Judgement notes
 
-**Answer length.** Respect a stated limit strictly. With no limit, 150-250 words
-beats 400. Recruiters skim.
+**Answer length.** Respect a stated limit strictly. With no limit, aim for
+**100-130 words**. That is shorter than feels right while drafting, and it is the
+length José has actually approved. 250 words reads as padding, and the padding is
+almost always CV recitation. If an answer will not fit in 130 words, the usual
+cause is that it is covering ground the CV already covers.
+
+Some forms state their own preference and it overrides this. Nango's asks for
+"1-3 genuine sentences" and warns that "AI-sounding responses disappoint". When a
+form says that, do not run the drafting workflow at all. Give José a short factual
+brief and let him write the sentences himself. A polished paragraph is the exact
+failure mode that form is screening for.
 
 **Story reuse.** Using the same story for two questions in one application is
 usually a mistake. The bank has 21 narrative and 19 STAR entries, so there is
@@ -191,3 +239,26 @@ actually draws him to it. A generic answer here is worse than a short one.
 **Tone.** The story banks note: use "I" not "we", include data points, keep each
 story self-contained. `latex-resume/AGENTS.md` carries the full writing rules and
 the ban on the em dash character. Both apply to everything you write here.
+
+**Do not write it dramatic.** This is the correction José makes most often. The
+drafting agent reaches for staccato openers ("Ten years in, I've never shipped
+money movement."), sentences engineered to land, and paragraphs that each end on a
+beat. It reads as a pitch deck. Plain declarative sentences that state the thing
+are what he approves. If a sentence sounds like it wants to be quoted, rewrite it.
+
+**Handle gaps once, at the end, framed forward.** Being honest about missing
+experience is right, and the hard rule against fabrication requires it. Where the
+drafts go wrong is placement and repetition. Never open on a gap: "I have not
+worked on billing or payments in ten years of backend work" is the first thing the
+recruiter reads and it reads as an apology for applying. Never state it twice; an
+opening admission plus a closing one inside 110 words is self-sabotage. State it
+once, at the end, as the reason the role is interesting rather than a reason to
+pass. "Billing, fraud detection, ClickHouse and Rust would all be new to me, and
+that is a large part of why the role interests me" does the same honest work
+without arguing against him.
+
+**Never imply he uses the product.** For "why this company", he is usually not a
+customer. Check before writing anything that assumes he is. When the answer needs
+a claim about the company, paraphrase the posting's own language back rather than
+praising a product he has not used. Their first paragraph is safer ground than
+your impression of them.
