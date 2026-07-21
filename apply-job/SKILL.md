@@ -232,10 +232,9 @@ changed relative to the **canonical** CV, meaning `resume.tex` built from
 `roles.json`, not the previous application's variant. Every application diffs
 against the same baseline, so two of them can be compared side by side.
 
-**Write it with `/caveman`.** Invoke the `caveman` skill for this file only. José
-reads this to see at a glance what was moved, cut, and reworded, and the compressed
-form is faster to scan than prose. The rest of the application folder stays in
-normal English.
+One short sentence per change. No paragraphs, no explanation of the reasoning
+behind a move unless the reason is not obvious from the change itself. José scans
+this, he does not read it.
 
 Cover, in this order: what the summary now leads with, what got reordered and where
 it moved, what was **cut** and why, and the page count. Cuts matter most. A dropped
@@ -253,8 +252,8 @@ Commit the `.tex` in `latex-resume` so the record of what was sent is frozen. Th
 Tell him:
 - What was produced and where.
 - **The contents of `changes.txt`**, in the reply itself, not just as a file path.
-  This is the CV diff against the canonical resume, in `/caveman` form. He should
-  not have to open a file to see what changed on his own CV.
+  This is the CV diff against the canonical resume. He should not have to open a
+  file to see what changed on his own CV.
 - **Any gap** between the posting and his actual experience. He needs to know
   where he is stretching before an interview, not after.
 - **Any claim the verifier flagged as unsupported**, and what you did about it.
