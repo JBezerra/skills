@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Draft a GitHub pull request description (and open the PR) in Tech Lead José Bezerra's house style — Jira link, Summary, Why, Testing Steps, Companion links, with the exact title conventions his team uses for standard, hotfix, warmfix, and revert PRs. Use this skill whenever the user asks to open a PR, create a pull request, write a PR description, "raise a PR", "PR this branch", stack a companion/hotfix/warmfix PR onto master/develop/release-qa, or says "/create-pr". Also trigger when the user has just finished a branch and wants to ship it, or asks you to write up the PR body before pushing.
+description: Draft a GitHub pull request description (and open the PR) in Tech Lead José Bezerra's house style — Jira link, Summary, Testing Steps, Companion links, with the exact title conventions his team uses for standard, hotfix, warmfix, and revert PRs. Use this skill whenever the user asks to open a PR, create a pull request, write a PR description, "raise a PR", "PR this branch", stack a companion/hotfix/warmfix PR onto master/develop/release-qa, or says "/create-pr". Also trigger when the user has just finished a branch and wants to ship it, or asks you to write up the PR body before pushing.
 ---
 
 # Create PR
@@ -48,7 +48,7 @@ If there's no Jira key (infra bump, config fix, conflict resolution), a plain de
 
 ## Standard PR body
 
-**Default to the minimal body.** The reviewer reads the diff — the PR description is the one thing the diff can't tell them, not a prose mirror of it. For most PRs that is: the Jira link and a one-or-two-sentence Summary of the core behavioral change. Everything else (`Why`, `Testing Steps`, `Notes`, `Companion changes`) is *earned* by having something the diff doesn't already convey. When in doubt, leave it out. A reviewer skimming a 4-line description is the goal, not a thorough one.
+**Default to the minimal body.** The reviewer reads the diff — the PR description is the one thing the diff can't tell them, not a prose mirror of it. For most PRs that is: the Jira link and a one-or-two-sentence Summary of the core behavioral change. Everything else (`Testing Steps`, `Notes`, `Companion changes`) is *earned* by having something the diff doesn't already convey. When in doubt, leave it out. A reviewer skimming a 4-line description is the goal, not a thorough one.
 
 The minimal body that fits most changes:
 
@@ -63,7 +63,6 @@ https://govspend.atlassian.net/browse/GS-XXXXX
 Grow from there **only** when a section carries information the diff/summary doesn't:
 
 - **`## Summary`** — **prose, not bullets.** One or two sentences, present-tense and behavioral. Don't bullet a single item, and don't split one change across bullets. Add a second sentence only for a genuinely separate behavior change, never to restate what the diff shows (exact config values, the list of files, per-env repetition, a guard tweak). "`WORKOS_RESOURCE_URL` now accepts a comma-separated list of audiences" — not three bullets enumerating each env's new URL. Resist re-explaining the mechanism: "each selection stores an `agencyId` instead of text the user typed" is diff-visible detail, "the three tiers are independent: none narrows or gates another" is not.
-- **`## Why`** — one or two sentences, only when the motivation isn't obvious from the Summary. Justify a removal, a revert, a non-obvious approach, or a cross-repo/deploy dependency a reviewer would otherwise miss. Link the evidence (Grafana/Kibana/Axiom, a Slack thread) rather than describing it. Background the reviewer doesn't need to *act* on isn't a Why — history that lives in the ticket or a call belongs in the ticket.
 - **`## Testing Steps`** — only when verification is non-trivial or needs a specific fixture/setup. Omit them for small, self-evident changes; vague steps a reviewer could guess are pure noise. Link the exact fixture (a bidDetails URL, a saved search, an env). For multi-service setups, break Setup into `### Setting up API` / `### Setting up MCP` subsections.
   - **A step is a command or an action, never an explanation.** ``run `yarn build && yarn init:db` `` — not that command plus a sentence on what `init:db` re-applies and what breaks without it. If a prerequisite has a reason, the reason is the reviewer's business only when it changes what they *do*; otherwise cut it. Trust the reader to run the command.
   - **Don't paste setup scripts, seed data, or fixtures into the body**, not even folded in a `<details>`. State the prerequisite in one line ("`federalAgencyType` is unpopulated until GS-3854 lands, so seed it locally or the pickers are empty") and stop. If a script is genuinely needed to test, that's a signal it should be committed or shared out-of-band, not inlined in the description.
@@ -136,7 +135,7 @@ Prefer a clean full revert over a partial one and say why. Mark production-affec
 - **Backtick everything technical:** branches, env vars, params, file names, package names, function names. `` `WORKOS_RESOURCE_URL` ``, `` `release/qa` ``, `` `@mastra/core` ``.
 - **Link the evidence, don't describe it.** A Grafana/Kibana/Axiom link for a logging-motivated change, a Slack thread for a demo, the exact fixture URL for a repro, the sibling PR for a companion. A claim with a link beats a paragraph without one.
 - **The Summary is present-tense, behavioral prose** — what the PR does for the reader, not a file-by-file list and not a bullet list. "WorkOS JWTs without an encrypted API key are forwarded directly to Spark as Bearer tokens", not "edited auth_provider.py".
-- **Explain the why for anything non-obvious** — a removal, a revert, a workaround, an approach that competes with the existing pattern. Skip the Why section when the Summary already makes it obvious.
+- **Never add a `## Why` section.** Motivation is what the Jira ticket is for, and a reviewer reading the diff doesn't act on it. If a rationale genuinely changes how the change should be reviewed, it's one clause in the Summary or a `## Notes` line, never its own section.
 - **Keep it lean, and lean harder than feels natural.** Omit empty sections entirely. A three-line PR (Jira + a one-sentence Summary) is the common case, not the exception. Reviewers read the description as a quick orientation, then read the diff. Length reads as noise.
 - **Never restate what the diff already shows.** The exact new config values, the list of changed files, the per-env repetition of the same change, a one-line guard tweak — the reviewer sees all of that in the diff. Say the *behavior* once and stop. If a bullet's content is recoverable by reading the diff, cut it.
 - **⚠️** is for genuine warnings (unrelated changes, production impact, merge-order hazards), used sparingly.
@@ -150,4 +149,4 @@ Prefer a clean full revert over a partial one and say why. Mark production-affec
 - Don't omit the hotfix disclaimer when the `master` branch carries develop bleed, and don't include it when the branch is clean.
 - Don't invent Testing Steps you can't ground in the diff or the ticket — vague steps are worse than none.
 - Don't add a `## Companion changes` section for a PR that isn't a true companion (one that must run *simultaneously*, e.g. the `spark`/`spark-mcp` pair). A stacked or same-base sibling is not a companion. When a real companion exists, don't leave it out and don't annotate it.
-- Don't pad a small PR with `Why` / `Testing Steps` / `Notes` it doesn't need, and don't re-describe the diff in prose. If the change is self-evident, Jira + a one-line Summary + companion links is the whole body.
+- Don't pad a small PR with `Testing Steps` / `Notes` it doesn't need, and don't re-describe the diff in prose. If the change is self-evident, Jira + a one-line Summary + companion links is the whole body.
