@@ -97,6 +97,13 @@ For each thread, decide: **keep unread**, **mark as read**, or **unknown**.
     shared with you" / "<Doc> shared with you". A colleague deliberately
     shared a document and likely wants the user's input.
 
+13. **Cloud service trial expiry / plan change notices** — automated
+    billing-adjacent emails from cloud providers (e.g.
+    `no-reply@amazonaws.com`, subject like "Your Amazon Quick free trial
+    ends in N days"). Anything announcing a trial ending, a plan
+    downgrade, or the start of charges. The user wants a chance to
+    cancel or budget before the change lands.
+
 ---
 
 ### MARK AS READ — noise the user doesn't want to see
