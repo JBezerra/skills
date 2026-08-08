@@ -5,8 +5,7 @@ description: >
   high effort, the personal /pr-review TL review, and browser-driven /uat-pr — and merge them
   into a single digest, with the two code-review digests rewritten in ASD-STE100 Simplified
   Technical English. Checks out the PR branch, pulls the latest, and preflights the local API
-  (:1337) and web app (:3000) first, then grills the user on the UAT scope before launching the
-  browser run and going autonomous. Use whenever the user asks for a full review, a complete
+  (:1337) and web app (:3000) first. Use whenever the user asks for a full review, a complete
   review, "review this PR every way", "run all the reviews", "code review + UAT", or says
   "/full-review". Not for a single review pass — use /pr-review, /uat-pr, or /code-review
   directly for those.
@@ -17,11 +16,6 @@ description: >
 One PR, three reviewers, one digest. You are the orchestrator: you resolve the target, prepare the
 environment, fan out to three subagents, and merge what comes back. You do **not** review the code
 yourself, you do **not** fix anything, and you do **not** post anything to GitHub.
-
-The two static reviewers start immediately. The UAT run does not: it is expensive, it drives the
-real app, and its value depends entirely on scoping it right. So the user gets grilled about the
-scope first (`grill-me`), and only their go-ahead launches it. That go-ahead is the **last** thing
-you ask for — after it, the run is autonomous and the user is away waiting for the digest.
 
 The three reviewers are deliberately independent — they must not see each other's output. Their
 disagreement is signal.
@@ -82,10 +76,11 @@ services yourself. The digest carries a `not run` UAT section stating exactly wh
 **API down but web up** → same handling: run the two static reviews, skip UAT, say the API was not
 listening on :1337 after the 40-second wait.
 
-## Phase 3a — fan out the static reviewers
+## Phase 3 — fan out
 
-Spawn both static subagents **in a single message** so they run concurrently, `subagent_type:
-"general-purpose"`, `run_in_background: true`. Do not run any review yourself while they work.
+Spawn every applicable subagent **in a single message** so they run concurrently, `subagent_type:
+"general-purpose"`, `run_in_background: true`. Do not run any review yourself while they work, and do
+not touch the browser — the UAT agent owns that session.
 
 Give each one the resolved PR number/URL, the head SHA, and the base branch. Tell each agent
 explicitly: **its final message is the only thing the orchestrator sees**, so it must contain the
@@ -106,60 +101,22 @@ complete findings, not a pointer to them or a summary of them.
 > the Verdict line and its rationale, and every `**blocker:**`, `**suggestion:**`, and
 > `**question:**` exactly as written.
 
+**`uat` agent** (only when :3000 answered)
+
+> Invoke the Skill tool with `skill: "personal-skills:uat-pr"` and `args: "<PR URL>"`. Run it end to
+> end **without pausing for plan approval** — the orchestrator approves the plan on the user's
+> behalf, so go straight from Phase 2 into Phase 3. Everything else in that skill still holds: the
+> branch is already checked out and the app is already running, so never check out a branch and never
+> start or stop a service. Return the full Phase 4 report: flows exercised, blockers with their
+> reproductions, the complete checklist table, other confirmed issues, what was not reproducible
+> locally, and whether the fixture restore succeeded. Include the plan file path.
+
 If a subagent dies or comes back empty, say so in its digest section. Never invent its findings, and
 never fill the gap with your own review.
 
-## Phase 3b — grill the UAT scope
-
-Skip this phase entirely when :3000 did not answer — there is nothing to scope. Go to Phase 4.
-
-While the static reviewers run, build your own understanding of the feature in the main context, the
-way `uat-pr` Phase 1 describes: the Jira ticket, the PR body, `git diff --stat` against the base, and
-the touched source files read in full. You need real labels, empty-state strings, validation
-messages, and the shape of what gets persisted. **Do not delegate this** — it is what makes the
-grilling worth the user's time. Do not open the browser.
-
-Then invoke `Skill(grill-me)` and run it to its own standard: rounds of `AskUserQuestion`, whole
-frontier per round, never markdown prose questions, facts looked up by you and never asked of the
-user. The design tree is the **UAT scope**, so the branches worth walking are:
-
-- What would make this feature wrong, in the user's words rather than the ticket's.
-- Which flows are must-cover, and which are noise this time.
-- Which account, tenant, and dataset to test against.
-- Whether seeding fixtures directly in MongoDB is allowed for this run, and which edge case earns it.
-- Which stated ACs the user already trusts, and which they want proven.
-- What the user has already checked by hand, so the run does not repeat it.
-- How far to push destructive or state-changing paths.
-
-The session ends the way `grill-me` says it ends: the frontier is empty and **the user confirms**.
-That confirmation ("GTG") is the launch signal, and it is the last input you take. Write the agreed
-scope down as a short brief — it goes into the UAT agent's prompt verbatim and into the digest.
-
-## Phase 3c — launch the UAT run
-
-On the go-ahead, spawn the third subagent, `subagent_type: "general-purpose"`,
-`run_in_background: true`. It owns the browser session; nothing else touches it.
-
-**`uat` agent**
-
-> Invoke the Skill tool with `skill: "personal-skills:uat-pr"` and `args: "<PR URL>"`. Run it end to
-> end **without pausing for plan approval** — the scope below was already agreed with the user, so go
-> straight from Phase 2 into Phase 3. Everything else in that skill still holds: the branch is
-> already checked out and the app is already running, so never check out a branch and never start or
-> stop a service. Return the full Phase 4 report: flows exercised, blockers with their reproductions,
-> the complete checklist table, other confirmed issues, what was not reproducible locally, and
-> whether the fixture restore succeeded. Include the plan file path.
->
-> Agreed scope: <the brief from Phase 3b, verbatim>
-
-**After this point, ask the user nothing.** They are away waiting for the digest. Every remaining
-decision is yours: a blocker mid-run, a missing fixture, a dead subagent — record it and carry on to
-Phase 4. Never end the run early to ask a question.
-
 ## Phase 4 — the digest
 
-Wait for every spawned agent — the static pair usually finishes during the grilling, the UAT run
-finishes long after. Then write one report, in this order.
+Wait for every spawned agent. Then write one report, in this order.
 
 The **UAT section keeps its native voice** — it is an observation log and rewording it loses the
 exact strings it observed. The **two code-review sections are rewritten in ASD-STE100 Simplified
@@ -170,7 +127,6 @@ Technical English**; read `references/ste.md` before writing them.
 <branch> @ <short sha> · base <base> · <date> · reviewers run: <which of the three>
 
 ## 1. UAT
-Agreed scope: <the one-paragraph brief from Phase 3b>
 <uat-pr Phase 4 report, verbatim: flows exercised, blockers, checklist table, other issues,
 not reproducible locally, fixture restore. Plan file: <path>>
 
