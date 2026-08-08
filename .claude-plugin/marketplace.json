@@ -24,7 +24,8 @@
         "./gs-qa-mcp",
         "./write-article",
         "./apply-job",
-        "./quinzenal-review"
+        "./quinzenal-review",
+        "./wait-what"
       ]
     }
   ]
