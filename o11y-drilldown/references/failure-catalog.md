@@ -168,6 +168,52 @@ denominator.
 
 ---
 
+## 10. An unknown agency identifier returns 200 with 0 records
+
+**Bucket:** our documentation gap.
+
+A `facet` node on a valid agency identifier field with a value the index has never held
+returns 200 with 0 records. The client cannot separate "GovSpend does not hold this
+agency" from "this agency has no matching record".
+
+**Confirmed:** Hand2mind, 2026-08-10. The client filters `search_spending` on
+`agencyEnriched.ncesId`, one NCES school district identifier per call. It uses 200
+distinct identifiers. A single control call that facets on all 200 at once returns
+7,985,607 records and 164 distinct identifiers. The other 36 identifiers hold nothing.
+
+**Control that proves the field name is valid:** `agencyEnriched.ncesId = "0622710"` gives
+577,326 records (Los Angeles Unified School District). `"0623340"` gives 45,119 records
+(Madera Unified School District).
+
+`agencyEnriched.ncesId` is real and works, and no `instructions.md` documents it. The
+documented agency identifiers are `agencyEnriched.agencyId` and
+`agencyEnriched.computedId`. `lookup_agency` accepts a name or an `agency_id`, not an NCES
+identifier.
+
+**Field cardinality, for reference:** the spending index holds 7,988 distinct
+`agencyEnriched.ncesId` values, and 518 of them are California districts.
+
+---
+
+## 11. The existence probe inflates the empty-result metric
+
+**Bucket:** the correct answer. Do not report this as a problem.
+
+A tree with `pageSize` 1 and a single `include` field is a probe, not a search. A client
+sweeps a list of agencies and asks one narrow yes-or-no question per agency. Most answers
+are "no", and each "no" counts as an empty result in the digest.
+
+**Confirmed:** Hand2mind, 2026-08-10. 273 of 275 empty results come from 2 probe shapes.
+The account reaches 88.71% empty and works exactly as designed. The client escalates to a
+real search with `pageSize` 15, 20, or 50 for every agency the probe finds.
+
+**Aggregate that bounds the narrow question:** the client's 38-phrase keyword filter
+matches 32,479 line items across the whole spending index. With the client's
+`LastModified` filter it matches 658. Divided across 200 districts, almost every district
+holds 0.
+
+---
+
 ## Useful production baselines
 
 Recheck these when you cite them; they drift.
