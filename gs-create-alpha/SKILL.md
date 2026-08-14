@@ -39,17 +39,27 @@ deploy.
    `<prNum>.<seqNum>-<sites>[-URL][-BACK]-alpha`. If the user names a build
    number, use theirs, but say so if it collides with an existing tag.
 
-3. **Flags** — default to whatever the PR's most recent alpha used; that is
-   almost always what they want again. Only ask if there is no previous build
-   and the request gives no hint.
+3. **Public or private — always ask.** `URL=true` puts the build on
+   `https://alpha.<site>.com`, reachable by anyone who has the address. That is a
+   disclosure decision, not a build setting, so never infer it from the previous
+   alpha and never assume it because the user said "link". Ask outright:
+
+   > Public (`https://alpha.<site>.com`, anyone with the URL) or private
+   > (internal access only)?
+
+   Skip the question only if the user already said which one they want in their
+   own words ("public alpha", "private build", "don't expose it").
+
+4. **Remaining flags** — default to whatever the PR's most recent alpha used;
+   that is almost always what they want again. Only ask if there is no previous
+   build and the request gives no hint.
 
    | input | notes |
    |---|---|
    | `sites` | `govspend`, `bidsearch`, or `govspend-bidsearch` |
-   | `URL` | `true` publishes it at `https://alpha.<site>.com`. **A request for an alpha *link* implies `URL=true`.** |
    | `BACK` | `true` also spins up a job-processing instance. Needed for anything exercising Temporal jobs, signals, or ingest. |
 
-4. **Dispatch**
+5. **Dispatch**
 
    ```bash
    gh workflow run create-alpha-build-release.yml \
@@ -57,11 +67,11 @@ deploy.
      -f prNum=<n> \
      -f seqNum=<n> \
      -f sites=govspend \
-     -f URL=true \
+     -f URL=<true|false> \
      -f BACK=true
    ```
 
-5. **Verify** — poll the run, then confirm the tag exists:
+6. **Verify** — poll the run, then confirm the tag exists:
 
    ```bash
    gh run view <runId> --json status,conclusion
@@ -70,8 +80,9 @@ deploy.
 
 ## Reporting back
 
-Give the user the run URL, the tag, and the alpha link (`https://alpha.govspend.com`
-/ `https://alpha.bidsearch.com`), and state the inputs used so wrong flags are
+Give the user the run URL, the tag, and — for a public build — the alpha link
+(`https://alpha.govspend.com` / `https://alpha.bidsearch.com`). State the inputs
+used, and say plainly whether the build is public or private, so a wrong flag is
 caught immediately. Flag anything that makes the build differ from what they
 likely expect — most often a `develop` merge you pushed along with their change,
 since the alpha is cut from the branch head, not from their commit alone.
