@@ -3,8 +3,9 @@ name: gs:create-alpha
 description: >
   Cut an alpha build release for a Spark pull request by dispatching the
   `create-alpha-build-release.yml` GitHub Actions workflow, picking the next
-  sequence number automatically and reusing the flags from the PR's previous
-  build. Use whenever asked to create an alpha, generate an alpha link, deploy a
+  sequence number automatically, always asking whether the build is public or
+  private, and reusing the PR's previous build for the remaining flags. Use
+  whenever asked to create an alpha, generate an alpha link, deploy a
   branch to alpha, bump the alpha build, or "give me an alpha for this PR".
   Spark repo only (smartprocure/spark).
 ---
@@ -45,7 +46,7 @@ deploy.
    previous alpha and never assume it because the user said "link". Ask outright:
 
    > Public (`https://app-alpha.govspend.com`, anyone with the URL) or private
-   > (internal access only)?
+   > (cluster-internal only)?
 
    Skip the question only if the user already said which one they want in their
    own words ("public alpha", "private build", "don't expose it").
@@ -78,14 +79,42 @@ deploy.
    gh release view <tag> --json tagName,url
    ```
 
+## The two URL formats
+
+They are not the same address with different access rules — they are different
+shapes entirely.
+
+**Public (`URL=true`)** — `https://app-alpha.govspend.com`
+
+The workflow's own input description says `https://alpha.{site}.com`; that is
+stale, do not repeat it. (The bidsearch equivalent is unconfirmed — ask rather
+than guess it.)
+
+**Private (`URL=false`)** — a cluster-internal host, reachable only from inside
+the cluster:
+
+```
+http://app-spark-alpha-govspend-back-<shortSha>.internal.svc.cluster.local
+```
+
+`<shortSha>` is the **7-character** short sha of the commit the release was cut
+from, so append the route the user cares about (e.g. `/opportunities`). Get it
+with an explicit width — the repo's default abbreviation is longer than 7:
+
+```bash
+git rev-parse --short=7 <branch-or-tag>
+```
+
+Unconfirmed: whether the `-back` segment is constant or reflects the `BACK`
+input, and the `bidsearch` form. Ask instead of assembling a URL you cannot
+verify.
+
 ## Reporting back
 
-Give the user the run URL, the tag, and — for a public build — the alpha link,
-**`https://app-alpha.govspend.com`**. Note that the workflow's own input
-description says `https://alpha.{site}.com`; that is stale, do not repeat it.
-(The bidsearch equivalent is unconfirmed — ask rather than guess it.) State the
-inputs used, and say plainly whether the build is public or private, so a wrong
-flag is caught immediately. Flag anything that makes the build differ from what they
+Give the user the run URL, the tag, and the alpha address in whichever of the two
+formats above matches the build. State the inputs used, and say plainly whether
+the build is public or private, so a wrong flag is caught immediately. Flag
+anything that makes the build differ from what they
 likely expect — most often a `develop` merge you pushed along with their change,
 since the alpha is cut from the branch head, not from their commit alone.
 
