@@ -40,11 +40,11 @@ deploy.
    number, use theirs, but say so if it collides with an existing tag.
 
 3. **Public or private — always ask.** `URL=true` puts the build on
-   `https://alpha.<site>.com`, reachable by anyone who has the address. That is a
-   disclosure decision, not a build setting, so never infer it from the previous
-   alpha and never assume it because the user said "link". Ask outright:
+   **`https://app-alpha.govspend.com`**, reachable by anyone who has the address.
+   That is a disclosure decision, not a build setting, so never infer it from the
+   previous alpha and never assume it because the user said "link". Ask outright:
 
-   > Public (`https://alpha.<site>.com`, anyone with the URL) or private
+   > Public (`https://app-alpha.govspend.com`, anyone with the URL) or private
    > (internal access only)?
 
    Skip the question only if the user already said which one they want in their
@@ -80,10 +80,12 @@ deploy.
 
 ## Reporting back
 
-Give the user the run URL, the tag, and — for a public build — the alpha link
-(`https://alpha.govspend.com` / `https://alpha.bidsearch.com`). State the inputs
-used, and say plainly whether the build is public or private, so a wrong flag is
-caught immediately. Flag anything that makes the build differ from what they
+Give the user the run URL, the tag, and — for a public build — the alpha link,
+**`https://app-alpha.govspend.com`**. Note that the workflow's own input
+description says `https://alpha.{site}.com`; that is stale, do not repeat it.
+(The bidsearch equivalent is unconfirmed — ask rather than guess it.) State the
+inputs used, and say plainly whether the build is public or private, so a wrong
+flag is caught immediately. Flag anything that makes the build differ from what they
 likely expect — most often a `develop` merge you pushed along with their change,
 since the alpha is cut from the branch head, not from their commit alone.
 
