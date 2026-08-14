@@ -214,6 +214,74 @@ holds 0.
 
 ---
 
+## 12. `"join": "all"` on a tokenized agency name
+
+**Bucket:** our documentation gap. The largest single cause found so far.
+
+A client splits an agency name into separate word tokens and puts them in one `tagsQuery`
+node with `"join": "all"`. Every token must match. Abbreviations (`Indep`, `Unif`, `Sch`,
+`Dist`) never match, because the index holds the full words. No `instructions.md` for a
+search tool shows `"join": "all"`; every example uses `"join": "any"`. `contact/tool.py`
+does document it, which is where clients likely learn it.
+
+**Confirmed:** Zayo Group, 2026-08-12. 282 `search_contracts` calls in 1 shape, 223 empty.
+
+**Control that proves it:** at 01:08:56 the agency node holds `["Aurora", "Academy"]` with
+`"join": "all"` and gives 0 records. At 01:08:58 the same tree with `["Aurora"]` gives 2
+records. The keyword node and the date node are byte-identical in both trees.
+
+**The token count controls the outcome.** Across 246 calls that share one keyword node and
+one date node:
+
+| Tokens | Calls | Empty % |
+| --- | --- | --- |
+| 1 | 72 | 51.4% |
+| 2 | 79 | 83.5% |
+| 3 | 65 | 95.4% |
+| 4 or more | 30 | 100% |
+
+**Aggregate that proves it is not one account:** over 7 days, contracts calls holding
+`agencyEnriched.name` and `"join": "all"` give 71.8% empty across 365 calls and 26 orgs,
+against a 9.4% baseline. Excluding Zayo Group, 48.2% across 85 calls and 25 orgs.
+
+---
+
+## 13. `agencyEnriched.nameState` is documented incorrectly for contracts
+
+**Bucket:** our defect (documentation). A live repo bug, not a customer error.
+
+`search_contracts/instructions.md:57` reads `agencyEnriched.nameState` — state name, e.g.
+`"Texas"`. `search_bids/instructions.md:64` and
+`search_meeting_intelligence/instructions.md:38` read the same field name as agency name +
+state, e.g. `"City of Dallas, Texas"`. The bids and meetings entries are correct.
+
+**Confirmed:** Zayo Group, 2026-08-11. At 16:31:33 the client filters `nameState` on
+`["Pittsburg Independent School District", "Texas"]` with `"join": "all"` and gives 0
+records. At 16:31:40 the client removes the keyword node and the result does not change.
+The agency node alone is unsatisfiable.
+
+Check this file whenever a client mixes an agency name and a state in one node.
+
+---
+
+## 14. The server denies `get_tool_instructions` on an MCP entitlement
+
+**Bucket:** our defect (entitlement). Explains a weakly steered client directly.
+
+`get_tool_instructions` can be refused for an org that holds a working MCP entitlement.
+The `core` dataset records `event = entitlement.denied` with
+`failure_mode = no_mcp_entitlement`.
+
+**Confirmed:** PASCO Scientific, 2026-08-11, at 18:13:07 and 18:13:26. The account made
+its first search 60 minutes later, and it was the only org in the window that tried to
+read the instructions at all.
+
+Always query `['govspend-production-spark-mcp-core'] | where event == 'entitlement.denied'`
+during the Step 6 helper-tool check. A denial is a stronger finding than a zero call
+count, because the client did the right thing and we refused.
+
+---
+
 ## Useful production baselines
 
 Recheck these when you cite them; they drift.
@@ -221,7 +289,12 @@ Recheck these when you cite them; they drift.
 | Measure | Value | Window |
 | --- | --- | --- |
 | Empty rate, all calls | 6% to 8% | 7 days, 2026-08 |
+| Empty rate, contracts dataset | 9.4% | 7 days, 2026-08-12 |
+| Empty rate, meetings dataset | 10.1% | 7 days, 2026-08-12 |
 | Empty rate with `"exact":true` | 3.2% | 7 days, 2026-08 |
 | Empty rate, `pageSize` 51 to 100 | 19.5% | 7 days, 2026-08 |
+| Empty rate, bids, phrase tag of 3 words or more | 18.4% | 7 days, 2026-08-12 |
+| Empty rate, `facet` on `agencyEnriched.nameState` | 4.8% | 7 days, 2026-08-12 |
 | `lookup_agency` calls | 729 | 48 hours, 2026-08-06 |
+| `lookup_agency` calls | 239 | 24 hours, 2026-08-12 |
 | Server-side page cap | 50 records returned | any `pageSize` above 50 |
