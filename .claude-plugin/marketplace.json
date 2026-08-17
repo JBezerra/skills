@@ -27,7 +27,7 @@
         "./apply-job",
         "./quinzenal-review",
         "./full-review",
-        "./o11y-drilldown",
+        "./gs-o11y-troubleshoot",
         "./gs-create-alpha"
       ]
     }

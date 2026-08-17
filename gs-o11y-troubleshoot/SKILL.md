@@ -1,5 +1,5 @@
 ---
-name: o11y-drilldown
+name: gs:o11y-troubleshoot
 description: >
   Reads the latest Spark MCP production digest in ~/source/@cron/o11y-digest/digests/,
   pulls the raw contexture queries for the orgs it flagged on empty searches through
@@ -7,7 +7,7 @@ description: >
   root-cause analysis in ASD-STE100 Simplified Technical English to
   ~/source/@specs/spark-mcp/. Answers three questions per org: which queries returned
   nothing, whether the customer recovered afterwards, and which tools they used.
-  Trigger whenever the user says "/o11y-drilldown", "analyse today's digest",
+  Trigger whenever the user says "/gs:o11y-troubleshoot", "analyse today's digest",
   "drill into the digest", "why did <org> get empty results", "investigate the zero
   results", "what did <org> do wrong", or names an org from a digest and asks what
   happened. Also handles a named org directly without a digest ("look at NVIDIA's
