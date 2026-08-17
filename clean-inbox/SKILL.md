@@ -104,6 +104,16 @@ For each thread, decide: **keep unread**, **mark as read**, or **unknown**.
     downgrade, or the start of charges. The user wants a chance to
     cancel or budget before the change lands.
 
+14. **SAM.gov account & role notifications** — `spdevelopment@govspend.com`
+    with a `SAM.gov |` subject prefix: role requests submitted or
+    approved, roles assigned (e.g. "You have been assigned Data Entry"),
+    and one-time passwords. Entitlement changes on the shared
+    Smartprocure Development account, which the user tracks. Note this
+    outranks the generic "Security & login notifications" noise rule for
+    SAM.gov one-time passwords, but NOT the "Incident / FSD response
+    requests" noise rule — `INC-GSAFSD…` incident and feedback mail from
+    the same sender is still noise.
+
 ---
 
 ### MARK AS READ — noise the user doesn't want to see
@@ -145,6 +155,11 @@ These are patterns that should be silently cleaned up:
 - **Newsletters & developer digests** — `support@codepen.io`,
   `announcements@figma.com`, `info@mail.zapier.com`, and similar
   mailing list / product announcement senders.
+
+- **Figma file activity that isn't a direct mention** — subjects like
+  "N new comments in <file>" or "N designs are ready for dev in <file>"
+  from `comments-*@email.figma.com` or `no-reply@email.figma.com`. Only
+  "@X mentioned you in <file>" stays unread.
 
 - **Promotional / marketing emails** — MBA programs, courses, education
   offers, cold sales pitches (non-recruiter). Sender domains like
