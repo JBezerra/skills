@@ -183,7 +183,8 @@ nothing. Keep the count in every heading.
 
 ### Finding shape, by bucket
 
-**MUST FIX** carries the full shape and a reproduction:
+**MUST FIX** carries the full shape and a reproduction. Number every step, and keep each step to one
+action the reader performs:
 
 `````
 ### <n>. <One plain sentence that names the symptom. No file path, no symbol name.>
@@ -202,8 +203,17 @@ nothing. Keep the count in every heading.
 1. <A click-path the user follows in under a minute.>
 `````
 
-**SHOULD FIX** uses the same shape and drops **Check it yourself**. Reproduction steps belong to the
-must-fix bucket only.
+**SHOULD FIX** uses the same shape and keeps **Check it yourself**. Every finding the reader can act
+on earns a reproduction, so the reader never takes the severity call on trust.
+
+**A finding that nobody reproduced still earns the panel.** Never invent a click-path. Write what the
+check actually needs, and say in a closing note why nobody ran it:
+
+- The precondition that UAT never met (`UAT never ticked a state in the filter popover, so step 3 is
+  the precondition nobody exercised`).
+- The dataset the local environment cannot build, and the code path or the response field to read
+  instead.
+- The panel opens with the honest sentence when no click-path exists: `This one has no click-path.`
 
 **COSMETIC AND PAPER CUTS** collapses to one bullet each: a bold plain-language label, one or two
 sentences, the anchors, then the reviewers in italic parentheses.
