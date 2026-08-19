@@ -183,8 +183,8 @@ nothing. Keep the count in every heading.
 
 ### Finding shape, by bucket
 
-**MUST FIX** carries the full shape and a reproduction. Number every step, and keep each step to one
-action the reader performs:
+**MUST FIX** carries the full shape and a reproduction. Write the steps as **bullets, never numbers**,
+and keep each step to one action the reader performs:
 
 `````
 ### <n>. <One plain sentence that names the symptom. No file path, no symbol name.>
@@ -200,7 +200,7 @@ action the reader performs:
 **Proof from UAT.** <Only when UAT saw it. Quote the stored shape or the observed string.>
 
 **Check it yourself.**
-1. <A click-path the user follows in under a minute.>
+- <A click-path the user follows in under a minute. Bullets, not numbers.>
 `````
 
 **SHOULD FIX** uses the same shape and keeps **Check it yourself**. Every finding the reader can act
