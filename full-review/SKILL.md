@@ -3,8 +3,8 @@ name: full-review
 description: >
   Run three independent reviews of one pull request in parallel — Anthropic's /code-review at
   high effort, the personal /pr-review TL review, and browser-driven /uat-pr — and merge them
-  into a single digest, with the two code-review digests rewritten in ASD-STE100 Simplified
-  Technical English. Checks out the PR branch, pulls the latest, and preflights the local API
+  into one digest that ranks every finding by what it costs to ship, written in ASD-STE100
+  Simplified Technical English. Checks out the PR branch, pulls the latest, and preflights the API
   (:1337) and web app (:3000) first. Use whenever the user asks for a full review, a complete
   review, "review this PR every way", "run all the reviews", "code review + UAT", or says
   "/full-review". Not for a single review pass — use /pr-review, /uat-pr, or /code-review
@@ -116,41 +116,131 @@ never fill the gap with your own review.
 
 ## Phase 4 — the digest
 
-Wait for every spawned agent. Then write one report, in this order.
+Wait for every spawned agent. A stalled agent can still resume and deliver, and a killed agent can
+report later. Do not finalise the digest while a reviewer is still in flight. If you already gave the
+user a digest and a late report then arrives, rewrite the whole digest and state plainly that it
+replaces the earlier one.
 
-The **UAT section keeps its native voice** — it is an observation log and rewording it loses the
-exact strings it observed. The **two code-review sections are rewritten in ASD-STE100 Simplified
-Technical English**; read `references/ste.md` before writing them.
+Write **one document**, not three. Group the findings by what they cost the user to ship, never by
+which reviewer spoke. The reader wants a merge decision, and the reviewer that found a defect is a
+confidence signal, not an organising principle.
+
+**Voice: ASD-STE100 Simplified Technical English for the whole digest**, including the UAT material.
+Read `references/ste.md` before you write. The protected list in that file is absolute: never rewrite
+a file path, a `file:line` anchor, a symbol name, a quoted app string, a quoted AC line, or a stored
+document shape.
+
+### Severity is yours to assign
+
+The reviewers' own labels are input, never the verdict. `/pr-review` names blockers. `/uat-pr` can
+report none. They disagree often, and the disagreement is the thing you resolve.
+
+Judge every finding on user harm. Ask one question: does a real customer hit this, and does the
+customer lose data or become stuck with no way out through the UI?
+
+- **A stuck or invisible state that the UI cannot undo is a must-fix.** A value the user cannot
+  deselect qualifies. A committed value with no visible row qualifies.
+- **Work that the user can redo is not a must-fix**, even when the app destroys it with no warning.
+  Put it at the top of the follow-up bucket and say in one line that it is a close call.
+- **A static prediction that nobody reproduced stays below the line.** Name the precondition that UAT
+  never met.
+- **Evidence from a stored document outranks a code reading.** When UAT found the defect on disk, say
+  so and quote the shape.
+
+### Merge duplicates, and tag who found each one
+
+One defect is one finding. Fold every reviewer that hit it into a single `Found by` line. Independent
+agreement between reviewers is the confidence signal, so the digest carries **no separate Agreement
+section**.
+
+- When one reviewer predicted a defect and another proved it in the running app, say both.
+- When a static prediction went unconfirmed because UAT never met its precondition, say that too.
+- Group findings that share one root cause under the same bucket and state the shared cause once.
+
+### Structure
 
 `````
-# Full review — PR #<N> <title>
-<branch> @ <short sha> · base <base> · <date> · reviewers run: <which of the three>
+# PR #<N> — <ticket key> <short feature name>
+`<branch>` @ `<short sha>` · base `<base>`
 
-## 1. UAT
-<uat-pr Phase 4 report, verbatim: flows exercised, blockers, checklist table, other issues,
-not reproducible locally, fixture restore. Plan file: <path>>
+## My call: <do not merge yet | merge after follow-ups | merge>
+<One or two sentences of what drives the call. Then a short paragraph of what is sound, so the
+author reads that the feature works before reading what does not.>
 
-## 2. Code review — /code-review high
-<findings, ASD-STE100. One finding per bullet: `file:line` — what is wrong — what happens.>
+# MUST FIX BEFORE MERGE (<n>)
+# SHOULD FIX, CAN BE A FOLLOW-UP (<n>)
+# COSMETIC AND PAPER CUTS (<n>)
+# NOT BUILT AT ALL (<n>)
+# NOT TESTED, SO UNKNOWN (<n>)
+# OPEN QUESTIONS FOR THE AUTHOR (<n>)
 
-## 3. TL review — /pr-review
-<verdict, ASD-STE100. Then blockers, suggestions, questions, each ASD-STE100, each keeping its
-**blocker:** / **suggestion:** / **question:** label.>
-
-## Agreement
-<Only findings that two or more reviewers hit independently, one line each, naming who found it.
-Nothing overlaps → say "no overlap between the three reviewers." Omit this section when only one
-reviewer ran.>
+## The checklist, in one line
+## Housekeeping
 `````
 
-Rules for the digest:
+Number the findings continuously across the first four buckets, from 1 to N. Omit a bucket that holds
+nothing. Keep the count in every heading.
 
-- **Merge nothing.** Each section holds only what its own agent returned. A finding that appears
-  twice appears twice, and once more under Agreement.
-- **Keep every anchor.** ASD-STE100 rewrites prose, never `file:line`, symbol names, quoted strings,
-  AC quotes, or stored document shapes.
-- **Drop no findings.** Simplification is about language, not about triage.
-- **Skipped sections stay visible**, marked `not run`, with the reason (`web app on :3000 was not
-  listening`).
-- Post nothing to GitHub. Apply no fix. If the user wants either, they ask for it after reading the
-  digest.
+### Finding shape, by bucket
+
+**MUST FIX** carries the full shape and a reproduction:
+
+`````
+### <n>. <One plain sentence that names the symptom. No file path, no symbol name.>
+
+**What happens.** <The user's experience, in short sentences. Present tense.>
+
+**Why.** <The mechanism, in two or three sentences.>
+
+**Where.** <Anchors and symbol names.>
+
+**Found by.** <reviewers>
+
+**Proof from UAT.** <Only when UAT saw it. Quote the stored shape or the observed string.>
+
+**Check it yourself.**
+1. <A click-path the user follows in under a minute.>
+`````
+
+**SHOULD FIX** uses the same shape and drops **Check it yourself**. Reproduction steps belong to the
+must-fix bucket only.
+
+**COSMETIC AND PAPER CUTS** collapses to one bullet each: a bold plain-language label, one or two
+sentences, the anchors, then the reviewers in italic parentheses.
+
+**NOT BUILT AT ALL** uses the full shape with no reproduction. Quote the AC line that asks for the
+missing work.
+
+**NOT TESTED, SO UNKNOWN** is one bullet each: what nobody exercised, and what would exercise it.
+
+**OPEN QUESTIONS FOR THE AUTHOR** is one bullet each. Keep the AC quote that raises the question.
+
+### The UAT checklist
+
+Report **only the rows that did not pass**, and fold each one into the bucket where it belongs. A
+passing row is not a finding, and the full grid is the densest block in the report.
+
+Close with one line: how many checks ran, how many passed, and where the rest of them live. Name the
+plan file path there.
+
+### Housekeeping footer
+
+State that nothing went to GitHub and that no fix is applied. State the database or fixture state.
+
+**Verify the fixture restore yourself with a read query.** Do not repeat the UAT agent's claim on
+trust. A killed agent leaves test data behind, and the user's local database is the thing that
+suffers.
+
+Close by offering the two next steps: start the top fix, or turn the digest into PR comments.
+
+### Rules
+
+- **Drop no findings.** Every finding from every reviewer appears exactly once, in some bucket. The
+  grouping is triage of severity, never triage of coverage.
+- **Keep every anchor.** Simplification rewrites prose, never a path, a symbol, or a quoted string.
+- **Open every finding in plain language.** Never start a finding with a file path or a symbol name.
+  The mechanism sits underneath, where the reader can skip it.
+- **A reviewer that did not report keeps a visible line**, with the reason (`the web app on :3000 was
+  not listening`, `the agent stalled and delivered no report`). Never invent its findings. Never fill
+  the gap with your own review.
+- Post nothing to GitHub. Apply no fix. The user asks for either after they read the digest.
