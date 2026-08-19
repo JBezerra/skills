@@ -182,7 +182,7 @@ author reads that the feature works before reading what does not.>
 # NOT TESTED, SO UNKNOWN (<n>)
 # OPEN QUESTIONS FOR THE AUTHOR (<n>)
 
-## The checklist, in one line
+## What UAT exercised (<n> checks)   <- the full checklist, collapsed
 ## Housekeeping
 `````
 
@@ -235,11 +235,22 @@ missing work.
 
 ### The UAT checklist
 
-Report **only the rows that did not pass**, and fold each one into the bucket where it belongs. A
-passing row is not a finding, and the full grid is the densest block in the report.
+Every failed and caveated row becomes a numbered finding in the bucket where it belongs. A passing row
+is not a finding, so it never appears above the coverage section.
 
-Close with one line: how many checks ran, how many passed, and where the rest of them live. Name the
-plan file path there.
+**Then publish the whole checklist, every row, in the coverage section.** It answers a different
+question from the findings: not what is broken, but what a browser actually drove. Without it the
+reader cannot tell a defect that does not exist from a defect nobody looked for.
+
+Keep it collapsed behind `details.checks` so it costs nothing to skip. Inside it:
+
+- One `li.chk` per row, with `st-pass`, `st-fail` or `st-warn` on the chip, the row id, the check as
+  the plan worded it, and what UAT observed with the exact strings.
+- Cross-reference the finding number on every row that did not pass (`See finding 3.`).
+- Keep the plan's own grouping: rows from the ticket AC, then the rows UAT derived itself.
+- Carry the flows it drove, the environment, the fixtures and the plan file path in the `cov-meta`
+  list above the collapsed rows. Say when Elasticsearch was remote, because that decides whether the
+  matches ran against real data.
 
 ### Housekeeping footer
 
@@ -283,11 +294,13 @@ print styles that all work together.
 - **Light mode, pinned** with `data-theme="light"` on the root element. The dark palette is still in
   the file and is one attribute away. Leave the pin in place.
 - **Print styles** that force every accordion open and hide the buttons, so a PDF keeps the full text.
+- **A coverage section** that carries the complete UAT checklist, collapsed, with a pass, fail or warn
+  chip on every row.
 
 ### Filling it in
 
-- Replace every `{{TOKEN}}`. There are 22 of them, all upper-case, all in the head, the masthead, the
-  verdict, the nav counts and the two closing blocks.
+- Replace every `{{TOKEN}}`. There are 25 of them, all upper-case, in the head, the masthead, the
+  verdict, the nav counts, the coverage section and the closing block.
 - Put exactly one variant class on `.verdict`: `v-block` for do-not-merge, `v-followup` for
   merge-after-follow-ups, `v-clear` for merge.
 - Repeat the example block inside each bucket once per finding, and renumber continuously.
@@ -301,6 +314,8 @@ print styles that all work together.
 
 - Confirm every `{{` is gone.
 - Confirm the nav counts match the bucket headings, and that the headings match the number of blocks.
+- Confirm the coverage section holds every checklist row, and that its pass, fail and warn counts add
+  up to the total.
 - Confirm no tag is left unclosed, and that the inline script still parses.
 - Give the user the path and the `open <path>` command.
 
