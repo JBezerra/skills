@@ -4,7 +4,8 @@ description: >
   Run three independent reviews of one pull request in parallel — Anthropic's /code-review at
   high effort, the personal /pr-review TL review, and browser-driven /uat-pr — and merge them
   into one digest that ranks every finding by what it costs to ship, written in ASD-STE100
-  Simplified Technical English. Checks out the PR branch, pulls the latest, and preflights the API
+  Simplified Technical English and delivered as a self-contained HTML docket under
+  ~/source/@specs/. Checks out the PR branch, pulls the latest, and preflights the API
   (:1337) and web app (:3000) first. Use whenever the user asks for a full review, a complete
   review, "review this PR every way", "run all the reviews", "code review + UAT", or says
   "/full-review". Not for a single review pass — use /pr-review, /uat-pr, or /code-review
@@ -125,6 +126,10 @@ Write **one document**, not three. Group the findings by what they cost the user
 which reviewer spoke. The reader wants a merge decision, and the reviewer that found a defect is a
 confidence signal, not an organising principle.
 
+**The deliverable is an HTML file, not a chat message.** A digest of this size is unreadable in a
+terminal. Render it from `references/digest-template.html` as described in Phase 5, and keep the chat
+reply to the verdict, the bucket counts, and the file path.
+
 **Voice: ASD-STE100 Simplified Technical English for the whole digest**, including the UAT material.
 Read `references/ste.md` before you write. The protected list in that file is absolute: never rewrite
 a file path, a `file:line` anchor, a symbol name, a quoted app string, a quoted AC line, or a stored
@@ -158,6 +163,9 @@ section**.
 - Group findings that share one root cause under the same bucket and state the shared cause once.
 
 ### Structure
+
+The template holds this structure already, with one worked example of every block. Read it before you
+write. The outline is:
 
 `````
 # PR #<N> — <ticket key> <short feature name>
@@ -254,3 +262,50 @@ Close by offering the two next steps: start the top fix, or turn the digest into
   not listening`, `the agent stalled and delivered no report`). Never invent its findings. Never fill
   the gap with your own review.
 - Post nothing to GitHub. Apply no fix. The user asks for either after they read the digest.
+
+## Phase 5 — render the HTML document
+
+Copy `references/digest-template.html` to
+`~/source/@specs/<repo>/<TICKET-KEY>-pr<N>-review.html`, then fill it in. Never write the page from
+scratch: the template carries a palette, a type scale, an accordion, a copy-to-clipboard script and
+print styles that all work together.
+
+### What the template gives you
+
+- **A defect-docket layout.** Hairline rules between findings, the finding number in a left gutter,
+  severity as a bucket colour. No cards, no rounded corners, no accent rails.
+- **Six semantic bucket colours**, each separate from the teal structural accent.
+- **Accordions.** Every numbered finding is a `<details>`. Only the must-fix findings carry `open`,
+  so the reader can scan the titles first. `Expand all` and `Collapse all` sit under the nav.
+- **A copy button on every `Check it yourself` panel.** It emits plain text with the steps as `-`
+  bullets and `<code>` spans wrapped in backticks, so the steps paste into Jira, Slack or GitHub. It
+  derives its header line from `document.title`, so nothing needs a hardcoded PR number.
+- **Light mode, pinned** with `data-theme="light"` on the root element. The dark palette is still in
+  the file and is one attribute away. Leave the pin in place.
+- **Print styles** that force every accordion open and hide the buttons, so a PDF keeps the full text.
+
+### Filling it in
+
+- Replace every `{{TOKEN}}`. There are 22 of them, all upper-case, all in the head, the masthead, the
+  verdict, the nav counts and the two closing blocks.
+- Put exactly one variant class on `.verdict`: `v-block` for do-not-merge, `v-followup` for
+  merge-after-follow-ups, `v-clear` for merge.
+- Repeat the example block inside each bucket once per finding, and renumber continuously.
+- Delete a whole `<section>` when its bucket is empty, and delete its `<li>` from the nav so the
+  counts stay honest.
+- Delete every optional block you do not use: `.bucket-note`, `.proof`, `.repro-note`,
+  `.close-call`, and the `Not confirmed` row.
+- Keep the steps in `<ul>`. Never use `<ol>` in a `Check it yourself` panel.
+
+### Before you hand it over
+
+- Confirm every `{{` is gone.
+- Confirm the nav counts match the bucket headings, and that the headings match the number of blocks.
+- Confirm no tag is left unclosed, and that the inline script still parses.
+- Give the user the path and the `open <path>` command.
+
+### The chat reply
+
+Keep it short. The verdict line, the bucket counts, the path, and the `open` command. Then the two
+offers: start the top fix, or turn the digest into PR comments. Do not paste the findings into the
+chat as well.
