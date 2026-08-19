@@ -175,6 +175,7 @@ write. The outline is:
 <One or two sentences of what drives the call. Then a short paragraph of what is sound, so the
 author reads that the feature works before reading what does not.>
 
+# WHAT UAT EXERCISED (<n> checks)   <- leads the document; the checklist itself is collapsed
 # MUST FIX BEFORE MERGE (<n>)
 # SHOULD FIX, CAN BE A FOLLOW-UP (<n>)
 # COSMETIC AND PAPER CUTS (<n>)
@@ -182,12 +183,14 @@ author reads that the feature works before reading what does not.>
 # NOT TESTED, SO UNKNOWN (<n>)
 # OPEN QUESTIONS FOR THE AUTHOR (<n>)
 
-## What UAT exercised (<n> checks)   <- the full checklist, collapsed
 ## Housekeeping
 `````
 
-Number the findings continuously across the first four buckets, from 1 to N. Omit a bucket that holds
-nothing. Keep the count in every heading.
+**The coverage section leads.** The reader sees what a browser drove before reading what is broken,
+which is what makes the severity calls legible. Its own checklist stays collapsed inside it.
+
+Number the findings continuously across the four finding buckets, from 1 to N. Omit a bucket that
+holds nothing. Keep the count in every heading.
 
 ### Finding shape, by bucket
 
@@ -286,16 +289,20 @@ print styles that all work together.
 - **A defect-docket layout.** Hairline rules between findings, the finding number in a left gutter,
   severity as a bucket colour. No cards, no rounded corners, no accent rails.
 - **Six semantic bucket colours**, each separate from the teal structural accent.
-- **Accordions.** Every numbered finding is a `<details>`. Only the must-fix findings carry `open`,
-  so the reader can scan the titles first. `Expand all` and `Collapse all` sit under the nav.
+- **Accordions at two levels.** Every top-level group is a `<details class="bucket">`, open by
+  default, so the reader can collapse a whole bucket down to its heading. Every numbered finding
+  inside is a `<details class="finding">`, and only the must-fix findings carry `open`. `Expand all`
+  and `Collapse all` sit under the nav and drive both levels plus the checklist.
+- **A print hook.** `beforeprint` opens every closed `<details>` and `afterprint` puts them back,
+  because CSS alone cannot reveal a closed one in Chrome. Never replace this with a `display` rule.
 - **A copy button on every `Check it yourself` panel.** It emits plain text with the steps as `-`
   bullets and `<code>` spans wrapped in backticks, so the steps paste into Jira, Slack or GitHub. It
   derives its header line from `document.title`, so nothing needs a hardcoded PR number.
 - **Light mode, pinned** with `data-theme="light"` on the root element. The dark palette is still in
   the file and is one attribute away. Leave the pin in place.
 - **Print styles** that force every accordion open and hide the buttons, so a PDF keeps the full text.
-- **A coverage section** that carries the complete UAT checklist, collapsed, with a pass, fail or warn
-  chip on every row.
+- **A coverage section** that leads the document and carries the complete UAT checklist, collapsed,
+  with a pass, fail or warn chip on every row.
 
 ### Filling it in
 
@@ -304,8 +311,9 @@ print styles that all work together.
 - Put exactly one variant class on `.verdict`: `v-block` for do-not-merge, `v-followup` for
   merge-after-follow-ups, `v-clear` for merge.
 - Repeat the example block inside each bucket once per finding, and renumber continuously.
-- Delete a whole `<section>` when its bucket is empty, and delete its `<li>` from the nav so the
-  counts stay honest.
+- Delete a whole `<details class="bucket">` when its bucket is empty, and delete its `<li>` from the
+  nav so the counts stay honest. Keep every remaining group `open`.
+- Keep the coverage group first, and its nav entry first.
 - Delete every optional block you do not use: `.bucket-note`, `.proof`, `.repro-note`,
   `.close-call`, and the `Not confirmed` row.
 - Keep the steps in `<ul>`. Never use `<ol>` in a `Check it yourself` panel.

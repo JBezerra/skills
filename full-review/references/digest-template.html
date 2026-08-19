@@ -134,23 +134,37 @@
   .tally a.t-info { color:var(--accent); }
 
   /* ---------- buckets ---------- */
-  section.bucket { margin-top:3.25rem; scroll-margin-top:4.5rem; }
-  section.bucket > h2 {
+  details.bucket { margin-top:3.25rem; scroll-margin-top:4.5rem; }
+  details.bucket > summary {
     display:flex; align-items:baseline; gap:.75rem; flex-wrap:wrap;
-    margin:0; padding:.55rem .8rem;
+    padding:.55rem .8rem; cursor:pointer; list-style:none;
+    border-bottom:2px solid currentColor;
+    -webkit-tap-highlight-color:transparent;
+  }
+  details.bucket > summary::-webkit-details-marker { display:none; }
+  details.bucket > summary::marker { content:""; }
+  details.bucket > summary h2 {
+    margin:0; color:inherit;
     font-family:var(--f-mono); font-size:.8rem; font-weight:700;
     letter-spacing:.1em; text-transform:uppercase;
-    border-bottom:2px solid currentColor;
   }
-  section.bucket > h2 .count {
+  details.bucket > summary .count {
     font-variant-numeric:tabular-nums; font-weight:400; opacity:.72;
   }
-  .b-crit > h2 { color:var(--crit); background:var(--crit-wash); }
-  .b-warn > h2 { color:var(--warn); background:var(--warn-wash); }
-  .b-cosm > h2 { color:var(--cosm); background:var(--cosm-wash); }
-  .b-gap  > h2 { color:var(--gap);  background:var(--gap-wash); }
-  .b-unk  > h2 { color:var(--unk);  background:var(--unk-wash); }
-  .b-q    > h2 { color:var(--q);    background:var(--q-wash); }
+  details.bucket > summary::after {
+    content:"+"; margin-left:auto; font-family:var(--f-mono);
+    font-size:1rem; line-height:1; opacity:.75;
+  }
+  details.bucket[open] > summary::after { content:"\2212"; }
+  details.bucket > summary:hover { filter:brightness(.97); }
+  details.bucket > summary:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
+  .b-crit > summary { color:var(--crit); background:var(--crit-wash); }
+  .b-warn > summary { color:var(--warn); background:var(--warn-wash); }
+  .b-cosm > summary { color:var(--cosm); background:var(--cosm-wash); }
+  .b-gap  > summary { color:var(--gap);  background:var(--gap-wash); }
+  .b-unk  > summary { color:var(--unk);  background:var(--unk-wash); }
+  .b-q    > summary { color:var(--q);    background:var(--q-wash); }
+  .b-info > summary { color:var(--accent); background:var(--accent-wash); }
 
   .bucket-note {
     margin:1.1rem 0 0; color:var(--ink-2); max-width:62ch; font-size:.94rem;
@@ -254,7 +268,7 @@
   @media print {
     nav.tally { position:static; }
     body { background:#fff; color:#000; font-size:11pt; }
-    section.bucket { break-inside:avoid-page; }
+    details.bucket { break-inside:avoid-page; }
     article.finding { break-inside:avoid; }
   }
   @media (prefers-reduced-motion:reduce){ *{ animation:none!important; transition:none!important; } }
@@ -320,11 +334,9 @@
     font-size:.88rem; font-style:italic; color:var(--ink-3);
   }
   @media print {
-    details.finding > .body { display:block !important; }
     button.copy, .allctl { display:none; }
   }
   /* ---------- coverage record ---------- */
-  .b-info > h2 { color:var(--accent); background:var(--accent-wash); }
   .cov-meta { margin-top:1.2rem; }
   details.checks { margin-top:1.4rem; border-top:1px solid var(--rule); }
   details.checks > summary {
@@ -376,7 +388,6 @@
     li.chk .cid { grid-row:1; grid-column:2; margin-top:.2rem; }
     li.chk .cbody { grid-row:2; grid-column:1 / -1; }
   }
-  @media print { details.checks > .cbodywrap, .cbodywrap { display:block !important; } }
 </style>
 </head>
 <body>
@@ -405,146 +416,21 @@
   <!-- Counts must match the buckets. Delete the <li> of any empty bucket. -->
   <nav class="tally" aria-label="Jump to a bucket">
     <ul>
+      <li><a class="t-info" href="#coverage"><span class="n">{{N_CHECKS}}</span> Checks</a></li>
       <li><a class="t-crit" href="#must"><span class="n">{{N_MUST}}</span> Must fix</a></li>
       <li><a class="t-warn" href="#should"><span class="n">{{N_SHOULD}}</span> Follow-up</a></li>
       <li><a class="t-cosm" href="#cosmetic"><span class="n">{{N_COSMETIC}}</span> Cosmetic</a></li>
       <li><a class="t-gap" href="#notbuilt"><span class="n">{{N_NOTBUILT}}</span> Not built</a></li>
       <li><a class="t-unk" href="#nottested"><span class="n">{{N_NOTTESTED}}</span> Not tested</a></li>
       <li><a class="t-q" href="#questions"><span class="n">{{N_QUESTIONS}}</span> Questions</a></li>
-      <li><a class="t-info" href="#coverage"><span class="n">{{N_CHECKS}}</span> Checks</a></li>
     </ul>
   </nav>
 
   <div class="allctl">
-    <span>{{TOTAL_FINDINGS}} findings, must-fix open</span>
+    <span>{{TOTAL_FINDINGS}} findings, {{N_CHECKS}} checks, every group collapsible</span>
     <button type="button" id="openAll">Expand all</button>
     <button type="button" id="closeAll">Collapse all</button>
   </div>
-
-  <!-- =========================================================
-       MUST FIX. Only this bucket carries open="" on its details.
-       Findings number continuously from 1 across the first four
-       buckets. Delete a whole section when its bucket is empty.
-       ========================================================= -->
-  <section class="bucket b-crit" id="must">
-    <h2>Must fix before merge <span class="count">{{N_MUST}}</span></h2>
-    <p class="bucket-note">{{Shared root cause, when the findings have one. Delete this paragraph otherwise.}}</p>
-
-    <details class="finding" open>
-      <summary>
-        <span class="num">1</span>
-        <h3>{{One plain sentence naming the symptom. No file path, no symbol name.}}</h3>
-      </summary>
-      <div class="body">
-        <dl class="fields">
-          <dt>What happens</dt>
-          <dd>{{The user's experience. Short sentences, present tense, active voice.}}</dd>
-          <dt>Why</dt>
-          <dd>{{The mechanism, two or three sentences.}}</dd>
-          <dt>Where</dt>
-          <dd class="anchors">{{file.tsx:123 · other.ts:45 — <code>symbolName</code> notes}}</dd>
-          <dt>Found by</dt>
-          <dd><span class="by"><span class="unanimous">all three</span><span>code-review</span><span>TL review</span><span>UAT</span></span></dd>
-        </dl>
-        <!-- Optional, repeatable. One block per distinct piece of evidence. -->
-        <div class="proof">
-          <span class="plabel">Proof from UAT</span>
-          {{The stored document shape, or the exact observed string.}}
-        </div>
-        <!-- Required on MUST FIX and SHOULD FIX. Bullets, never numbers. -->
-        <div class="repro">
-          <div class="repro-head"><span class="plabel">Check it yourself</span><button type="button" class="copy" data-copy>Copy steps</button></div>
-          <ul>
-            <li>{{One action per bullet.}}</li>
-          </ul>
-        </div>
-      </div>
-    </details>
-  </section>
-
-  <!-- ============ FOLLOW-UPS. Same shape, no open="" ============ -->
-  <section class="bucket b-warn" id="should">
-    <h2>Should fix, can be a follow-up <span class="count">{{N_SHOULD}}</span></h2>
-
-    <details class="finding">
-      <summary>
-        <span class="num">2</span>
-        <h3>{{Plain symptom sentence.}}</h3>
-      </summary>
-      <div class="body">
-        <dl class="fields">
-          <dt>What happens</dt>
-          <dd>{{...}}</dd>
-          <dt>Why</dt>
-          <dd>{{...}}</dd>
-          <dt>Where</dt>
-          <dd class="anchors">{{anchors}}</dd>
-          <dt>Found by</dt>
-          <dd><span class="by"><span>code-review</span><span>TL review</span></span></dd>
-          <!-- Use this row when a static reviewer predicted it and UAT never met the precondition. -->
-          <dt>Not confirmed</dt>
-          <dd>{{Which reviewer predicted it, and the precondition nobody exercised.}}</dd>
-        </dl>
-        <div class="repro">
-          <div class="repro-head"><span class="plabel">Check it yourself</span><button type="button" class="copy" data-copy>Copy steps</button></div>
-          <ul>
-            <li>{{Bullet steps. With no click-path, open with "This one has no click-path." and give the dataset or the code path to read instead.}}</li>
-          </ul>
-          <!-- Optional closing note for anything nobody reproduced. -->
-          <p class="repro-note">{{Why nobody ran it.}}</p>
-        </div>
-        <!-- Optional. Use on the single finding nearest the must-fix line. -->
-        <span class="close-call">{{This is the closest call on the list. Why it stays below the line.}}</span>
-      </div>
-    </details>
-  </section>
-
-  <!-- ============ COSMETIC. One bullet each, numbering continues ============ -->
-  <section class="bucket b-cosm" id="cosmetic">
-    <h2>Cosmetic and paper cuts <span class="count">{{N_COSMETIC}}</span></h2>
-    <ul class="items">
-      <li><span class="num">3</span><span class="txt"><b>{{Plain label.}}</b> {{One or two sentences.}}<span class="where">{{file.tsx:225 · which reviewers}}</span></span></li>
-    </ul>
-  </section>
-
-  <!-- ============ NOT BUILT. Full shape, no repro panel ============ -->
-  <section class="bucket b-gap" id="notbuilt">
-    <h2>Not built at all <span class="count">{{N_NOTBUILT}}</span></h2>
-    <details class="finding">
-      <summary>
-        <span class="num">4</span>
-        <h3>{{What is missing.}}</h3>
-      </summary>
-      <div class="body">
-        <dl class="fields">
-          <dt>What happens</dt>
-          <dd>{{What the step renders instead, quoted exactly.}}</dd>
-          <dt>The ticket asks</dt>
-          <dd>{{The AC line, quoted verbatim.}}</dd>
-          <dt>Where</dt>
-          <dd class="anchors">{{anchors}}</dd>
-          <dt>Found by</dt>
-          <dd><span class="by"><span>TL review</span><span>UAT · rows S1, S12</span></span></dd>
-        </dl>
-      </div>
-    </details>
-  </section>
-
-  <!-- ============ NOT TESTED. Not findings, so no numbers ============ -->
-  <section class="bucket b-unk" id="nottested">
-    <h2>Not tested, so unknown <span class="count">{{N_NOTTESTED}}</span></h2>
-    <ul class="items nonum">
-      <li><span class="txt"><b>{{What nobody exercised.}}</b> {{What would exercise it.}}</span></li>
-    </ul>
-  </section>
-
-  <!-- ============ QUESTIONS. Not findings, so no numbers ============ -->
-  <section class="bucket b-q" id="questions">
-    <h2>Open questions for the author <span class="count">{{N_QUESTIONS}}</span></h2>
-    <ul class="items nonum">
-      <li><span class="txt"><b>{{The question.}}</b> {{The AC quote that raises it, and what the code does instead.}}<span class="where">{{anchors}}</span></span></li>
-    </ul>
-  </section>
 
   <!-- =========================================================
        WHAT UAT EXERCISED. The full coverage record, collapsed.
@@ -552,8 +438,8 @@
        failures. st-pass / st-fail / st-warn on the status chip.
        Delete this whole section when UAT did not run.
        ========================================================= -->
-  <section class="bucket b-info" id="coverage">
-    <h2>What UAT exercised <span class="count">{{N_CHECKS}} checks</span></h2>
+  <details class="bucket b-info" id="coverage" open>
+    <summary><h2>What UAT exercised <span class="count">{{N_CHECKS}} checks</span></h2></summary>
     <p class="bucket-note"><b>{{N_PASSED}} passed, {{N_FAILED}} failed, {{N_WARNED}} landed with a caveat.</b> Every check that did not pass is also a numbered finding above. The rest is the coverage record: what a browser actually drove, so the reader can see where the confidence comes from and where it does not.</p>
 
     <dl class="fields cov-meta">
@@ -593,7 +479,132 @@
         </ul>
       </div>
     </details>
-  </section>
+  </details>
+
+  <!-- =========================================================
+       MUST FIX. Only this bucket carries open="" on its details.
+       Findings number continuously from 1 across the first four
+       buckets. Delete a whole section when its bucket is empty.
+       ========================================================= -->
+  <details class="bucket b-crit" id="must" open>
+    <summary><h2>Must fix before merge <span class="count">{{N_MUST}}</span></h2></summary>
+    <p class="bucket-note">{{Shared root cause, when the findings have one. Delete this paragraph otherwise.}}</p>
+
+    <details class="finding" open>
+      <summary>
+        <span class="num">1</span>
+        <h3>{{One plain sentence naming the symptom. No file path, no symbol name.}}</h3>
+      </summary>
+      <div class="body">
+        <dl class="fields">
+          <dt>What happens</dt>
+          <dd>{{The user's experience. Short sentences, present tense, active voice.}}</dd>
+          <dt>Why</dt>
+          <dd>{{The mechanism, two or three sentences.}}</dd>
+          <dt>Where</dt>
+          <dd class="anchors">{{file.tsx:123 · other.ts:45 — <code>symbolName</code> notes}}</dd>
+          <dt>Found by</dt>
+          <dd><span class="by"><span class="unanimous">all three</span><span>code-review</span><span>TL review</span><span>UAT</span></span></dd>
+        </dl>
+        <!-- Optional, repeatable. One block per distinct piece of evidence. -->
+        <div class="proof">
+          <span class="plabel">Proof from UAT</span>
+          {{The stored document shape, or the exact observed string.}}
+        </div>
+        <!-- Required on MUST FIX and SHOULD FIX. Bullets, never numbers. -->
+        <div class="repro">
+          <div class="repro-head"><span class="plabel">Check it yourself</span><button type="button" class="copy" data-copy>Copy steps</button></div>
+          <ul>
+            <li>{{One action per bullet.}}</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </details>
+
+  <!-- ============ FOLLOW-UPS. Same shape, no open="" ============ -->
+  <details class="bucket b-warn" id="should" open>
+    <summary><h2>Should fix, can be a follow-up <span class="count">{{N_SHOULD}}</span></h2></summary>
+
+    <details class="finding">
+      <summary>
+        <span class="num">2</span>
+        <h3>{{Plain symptom sentence.}}</h3>
+      </summary>
+      <div class="body">
+        <dl class="fields">
+          <dt>What happens</dt>
+          <dd>{{...}}</dd>
+          <dt>Why</dt>
+          <dd>{{...}}</dd>
+          <dt>Where</dt>
+          <dd class="anchors">{{anchors}}</dd>
+          <dt>Found by</dt>
+          <dd><span class="by"><span>code-review</span><span>TL review</span></span></dd>
+          <!-- Use this row when a static reviewer predicted it and UAT never met the precondition. -->
+          <dt>Not confirmed</dt>
+          <dd>{{Which reviewer predicted it, and the precondition nobody exercised.}}</dd>
+        </dl>
+        <div class="repro">
+          <div class="repro-head"><span class="plabel">Check it yourself</span><button type="button" class="copy" data-copy>Copy steps</button></div>
+          <ul>
+            <li>{{Bullet steps. With no click-path, open with "This one has no click-path." and give the dataset or the code path to read instead.}}</li>
+          </ul>
+          <!-- Optional closing note for anything nobody reproduced. -->
+          <p class="repro-note">{{Why nobody ran it.}}</p>
+        </div>
+        <!-- Optional. Use on the single finding nearest the must-fix line. -->
+        <span class="close-call">{{This is the closest call on the list. Why it stays below the line.}}</span>
+      </div>
+    </details>
+  </details>
+
+  <!-- ============ COSMETIC. One bullet each, numbering continues ============ -->
+  <details class="bucket b-cosm" id="cosmetic" open>
+    <summary><h2>Cosmetic and paper cuts <span class="count">{{N_COSMETIC}}</span></h2></summary>
+    <ul class="items">
+      <li><span class="num">3</span><span class="txt"><b>{{Plain label.}}</b> {{One or two sentences.}}<span class="where">{{file.tsx:225 · which reviewers}}</span></span></li>
+    </ul>
+  </details>
+
+  <!-- ============ NOT BUILT. Full shape, no repro panel ============ -->
+  <details class="bucket b-gap" id="notbuilt" open>
+    <summary><h2>Not built at all <span class="count">{{N_NOTBUILT}}</span></h2></summary>
+    <details class="finding">
+      <summary>
+        <span class="num">4</span>
+        <h3>{{What is missing.}}</h3>
+      </summary>
+      <div class="body">
+        <dl class="fields">
+          <dt>What happens</dt>
+          <dd>{{What the step renders instead, quoted exactly.}}</dd>
+          <dt>The ticket asks</dt>
+          <dd>{{The AC line, quoted verbatim.}}</dd>
+          <dt>Where</dt>
+          <dd class="anchors">{{anchors}}</dd>
+          <dt>Found by</dt>
+          <dd><span class="by"><span>TL review</span><span>UAT · rows S1, S12</span></span></dd>
+        </dl>
+      </div>
+    </details>
+  </details>
+
+  <!-- ============ NOT TESTED. Not findings, so no numbers ============ -->
+  <details class="bucket b-unk" id="nottested" open>
+    <summary><h2>Not tested, so unknown <span class="count">{{N_NOTTESTED}}</span></h2></summary>
+    <ul class="items nonum">
+      <li><span class="txt"><b>{{What nobody exercised.}}</b> {{What would exercise it.}}</span></li>
+    </ul>
+  </details>
+
+  <!-- ============ QUESTIONS. Not findings, so no numbers ============ -->
+  <details class="bucket b-q" id="questions" open>
+    <summary><h2>Open questions for the author <span class="count">{{N_QUESTIONS}}</span></h2></summary>
+    <ul class="items nonum">
+      <li><span class="txt"><b>{{The question.}}</b> {{The AC quote that raises it, and what the code does instead.}}<span class="where">{{anchors}}</span></span></li>
+    </ul>
+  </details>
 
   <div class="closing">
     <h2>Housekeeping</h2>
@@ -611,7 +622,7 @@
   all('#openAll, #closeAll').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var open = btn.id === 'openAll';
-      all('details.finding').forEach(function (d) { d.open = open; });
+      all('details.bucket, details.finding, details.checks').forEach(function (d) { d.open = open; });
     });
   });
 
@@ -644,6 +655,16 @@
       return ok;
     } catch (e) { return false; }
   }
+
+  var reopened = [];
+  window.addEventListener('beforeprint', function () {
+    reopened = all('details:not([open])');
+    reopened.forEach(function (d) { d.open = true; });
+  });
+  window.addEventListener('afterprint', function () {
+    reopened.forEach(function (d) { d.open = false; });
+    reopened = [];
+  });
 
   all('button[data-copy]').forEach(function (btn) {
     btn.addEventListener('click', function () {
