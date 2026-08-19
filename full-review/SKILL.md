@@ -295,9 +295,11 @@ print styles that all work together.
   and `Collapse all` sit under the nav and drive both levels plus the checklist.
 - **A print hook.** `beforeprint` opens every closed `<details>` and `afterprint` puts them back,
   because CSS alone cannot reveal a closed one in Chrome. Never replace this with a `display` rule.
-- **A copy button on every `Check it yourself` panel.** It emits plain text with the steps as `-`
-  bullets and `<code>` spans wrapped in backticks, so the steps paste into Jira, Slack or GitHub. It
-  derives its header line from `document.title`, so nothing needs a hardcoded PR number.
+- **A copy button on every `Check it yourself` panel.** It emits the steps and nothing else, as `-`
+  bullets with `<code>` spans wrapped in backticks, so they paste into Jira, Slack or GitHub. **Never
+  add a header line** naming the PR or the finding. The reader pastes these into a thread that already
+  has that context, and a prefix is noise there. A `Note:` line still trails the steps when the panel
+  carries one.
 - **Light mode, pinned** with `data-theme="light"` on the root element. The dark palette is still in
   the file and is one attribute away. Leave the pin in place.
 - **Print styles** that force every accordion open and hide the buttons, so a PDF keeps the full text.

@@ -669,14 +669,8 @@
   all('button[data-copy]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var repro = btn.closest('.repro');
-      var find = btn.closest('.finding');
-      var num = find ? tidy(find.querySelector('.num').textContent) : '';
-      var title = find ? tidy(nodeText(find.querySelector('h3'))) : '';
-      var steps = Array.prototype.slice.call(repro.querySelectorAll('ul > li'))
+      var lines = Array.prototype.slice.call(repro.querySelectorAll('ul > li'))
         .map(function (li) { return '- ' + tidy(nodeText(li)); });
-      var doc = (document.title || '').replace(/\u2014/g, '-');
-      var lines = [doc + ' - finding ' + num + ': ' + title, ''];
-      lines = lines.concat(steps);
       var note = repro.querySelector('.repro-note');
       if (note) { lines.push('', 'Note: ' + tidy(nodeText(note))); }
       var label = btn.textContent;
