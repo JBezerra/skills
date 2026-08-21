@@ -98,6 +98,21 @@ Two `tagsQuery` nodes under one `and` group both have to match, even when each n
 the stage node and gets 147 records. The same before and after occurs twice more in the
 same session.
 
+**Correction, 2026-08-17. Check the call order before you report this.** The same 2 trees
+appeared again for NVIDIA on 2026-08-16, and the reading above did not hold. The client
+sent the tree without the stage node first, then the tree with it, 535 milliseconds later,
+on every one of 69 sweeps. That is a deliberate 2 tier query, not a repair loop. The
+client asks for all AI bids, then for the early-stage subset. The AND is what the client
+wants.
+
+**The control that separates the 2 readings:** run the `stage` node on its own, then run
+it with the other node, at national scope. On 2026-08-17 the `stage` node alone gave
+4,200 open bids. The `stage` node with a 4 term technology node gave 53 open bids. The
+mechanism works. NVIDIA's 69 empty results came from the agency portfolio, which held
+none of those 53 bids.
+
+Report this cause only when the client never sends the tree without the second node.
+
 ---
 
 ## 5. Free text against a controlled-vocabulary field
@@ -282,6 +297,133 @@ count, because the client did the right thing and we refused.
 
 ---
 
+## 15. An exact `facet` on a vendor name field under-counts, and does not empty
+
+**Bucket:** our documentation gap. It suppresses records. It is almost never the cause of
+an empty result, so do not report it as one without the control in the last paragraph.
+
+`facet` matches the raw stored string. `companyName` and `Vendor.Name` are listed under
+**Text search** in `instructions.md`, for use with `tagsQuery`. A client that builds a
+partner watchlist puts marketing names in a `facet` node. The index holds legal entity
+names. The node matches a small fraction of the vendor's records.
+
+**Confirmed:** NVIDIA, 2026-08-16. The client keeps a 20 name vendor watchlist on
+`companyName`.
+
+**Control that measures the loss**, `contractEffectiveDate` over 12 months:
+
+| Node | Records |
+| --- | --- |
+| The 20 name watchlist, as `facet` | 111 |
+| The same vendors, as `tagsQuery` with shorter tags | 1,792 |
+
+**Per-vendor controls, all dates:**
+
+| Node | Records |
+| --- | --- |
+| `facet` `companyName` = `"Cisco Systems"` | 13 |
+| `tagsQuery` `companyName` tag `Cisco` | 360 |
+| `facet` `companyName` = `"ePlusTechnology Inc"` | 0 |
+| `tagsQuery` `companyName` tag `ePlus` | 697 |
+
+The index holds `Eplus Technology Inc`. The client sends `ePlusTechnology Inc`.
+
+**`tagsQuery` is not a safe substitute.** The tag `Zones` matches `Stripe A Zone Llc` and
+`Balboa Fun Zone Inc`, and gives 2,297 contracts. There is no `lookup_vendor` tool. No
+tool resolves a canonical vendor name, and `lookup_agency` does not accept one.
+
+**Before you blame this for an empty result, run the control.** Replace the `facet` node
+with a `tagsQuery` node and keep every other node. For NVIDIA the empty result stayed
+empty: the corrected tree gave 2 records in a window where the client had 325 empty
+results. The date window was the binding constraint, not the vendor names. This cause
+explains a low record count. It rarely explains a 0.
+
+`facet` on `agencyEnriched.nameState` does work with a canonical value. That is not the
+problem here; the vendor field is.
+
+---
+
+## 16. The spending index load lag is longer than the client's poll window
+
+**Bucket:** the correct answer, plus a documentation gap. Do not open a ticket on the
+empty results themselves.
+
+A client polls `PO.IssuedDate` over the last 1 to 5 days. The spending index has not
+loaded that period yet for most agencies. Every poll gives an empty result.
+
+**Confirmed:** NVIDIA, 2026-08-16. 359 of 360 `search_spending` calls give an empty
+result. Every call carries a `PO.IssuedDate` window of 1 to 5 days.
+
+**Aggregate that proves it:** the whole spending index holds 553 line items for
+`PO.IssuedDate` 2026-08-12 to 2026-08-16, and 586 for 2026-08-09 to 2026-08-13. Normal
+volume is millions per year.
+
+**Control that measures the lag:** the 6 canonical Maricopa County agency names on
+`agencyEnriched.nameState` with 2026-06-01 to 2026-08-17 give 31,681 line items. The
+newest `PO.IssuedDate` in that set is 2026-07-07. The lag is about 6 weeks for these
+agencies, and it is not uniform: `agencyEnriched.agencyState` = `Arizona` with
+2026-08-09 to 2026-08-13 gives 60 line items.
+
+No `instructions.md` states the lag. The client cannot separate "GovSpend has not loaded
+this week yet" from "these agencies bought nothing".
+
+---
+
+## 17. `facet` on `agencyEnriched.nameState` is case-sensitive and exact
+
+**Bucket:** our defect, in the sense that 1 character of case silently removes an entire
+agency. It suppresses records rather than causing an empty result, so apply the same
+control rule as cause 15.
+
+`facet` matches the raw stored string, including case, punctuation, and the exact legal
+form of the agency name. A client that generates agency names from a city list loses most
+of them, and receives no signal that anything is wrong.
+
+**Confirmed:** NVIDIA, 2026-08-16. The client sweeps 17 metropolitan portfolios with 233
+distinct agency names. 150 of them, which is 64%, match no record in the index.
+
+**The case control, which is the crispest proof:**
+
+| Value | Records |
+| --- | --- |
+| `County of DeKalb, Georgia` | 0 |
+| `County of Dekalb, Georgia` | 363,804 |
+| `County of DuPage, Illinois` | 0 |
+| `County of Dupage, Illinois` | 21,345 |
+
+**The 3 groups of dead names:**
+
+1. **The `X County, State` form, 46 names.** The index never uses it. It uses
+   `County of X, State`. `Maricopa County, Arizona` gives 0, and
+   `County of Maricopa, Arizona` gives 8,605. A client that emits both forms wastes half
+   of every county entry.
+2. **Generated `Town of` and `Village of` padding, 92 of 94 names.** Only
+   `Town of Cary, North Carolina` and `Town of Chapel Hill, North Carolina` are real.
+3. **Near-miss spellings and consolidated agencies, 12 names.** These are the expensive
+   ones, because the client believes it covers the agency.
+
+| The client sends | The index holds | Records |
+| --- | --- | --- |
+| `County of Prince George's, Maryland` | `County of Prince Georges, Maryland` | 389,248 |
+| `City of San Francisco, California` | `City and County of San Francisco, California` | 10,393 |
+| `County of Wyandotte, Kansas` | `Unified Government of Wyandotte County and Kansas City, Kansas` | 9,190 |
+| `City of Chapel Hill, North Carolina` | `Town of Chapel Hill, North Carolina` | 3,257 |
+| `City of Washington, District of Columbia` | nothing; DC agencies carry individual names | 0 |
+
+**How to run this check on any account.** Extract every distinct value from the `facet`
+node with APL, put all of them in 1 `facet` node, and run `analytics_*` with a
+`fieldValuesGroupStats` on the same field. The keys that return are the live names. Diff
+them against the sent list. Run it a second time with no date filter, so that a real but
+quiet agency does not count as dead. For NVIDIA, 6 names were live but had no spending in
+12 months.
+
+**Other facet fields to clear at the same time.** For NVIDIA these were all correct:
+`agencyEnriched.country` (`USA` is the only value), `agencyEnriched.levelOfGovernment`
+(`State`, `Local`), and `agencyEnriched.agencyState` (full state names). Only the name
+fields were wrong.
+
+---
+
 ## Useful production baselines
 
 Recheck these when you cite them; they drift.
@@ -295,6 +437,14 @@ Recheck these when you cite them; they drift.
 | Empty rate, `pageSize` 51 to 100 | 19.5% | 7 days, 2026-08 |
 | Empty rate, bids, phrase tag of 3 words or more | 18.4% | 7 days, 2026-08-12 |
 | Empty rate, `facet` on `agencyEnriched.nameState` | 4.8% | 7 days, 2026-08-12 |
+| Empty rate, bids dataset | 17.7% | 7 days, 2026-08-17 |
+| Empty rate, bids, tree with a `search` node and a `stage` node (2 orgs, and see cause 4) | 96.0% | 7 days, 2026-08-17 |
+| Open bids matching the `stage` node alone, nationwide | 4,200 | 2026-08-17 |
+| Open bids matching the `stage` node and a technology node, nationwide | 53 | 2026-08-17 |
 | `lookup_agency` calls | 729 | 48 hours, 2026-08-06 |
 | `lookup_agency` calls | 239 | 24 hours, 2026-08-12 |
+| `lookup_agency` calls | 20 | 24 hours, 2026-08-17 |
+| `lookup_agency` calls | 4,629 | 7 days, 2026-08-17 |
+| Spending line items with `PO.IssuedDate` in the last 5 days | 553 | 2026-08-12 to 2026-08-16 |
+| Active contracts with `contractEffectiveDate` in the last 5 days | 1,330 | 2026-08-12 to 2026-08-16 |
 | Server-side page cap | 50 records returned | any `pageSize` above 50 |
