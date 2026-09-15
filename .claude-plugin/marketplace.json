@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "personal-skills",
-      "description": "Jose Bezerra's personal skills: PR review, PR authoring, browser-driven PR UAT, multi-agent full PR review, inbox cleanup, Jira ticket authoring, daily brain-dump analysis, Spark MCP digest drill-down, personal coding-style guidelines, MCP QA journey testing, Spark alpha build releases, writing in his own voice, adversarial UX design challenge, guided git conflict resolution, and addressing PR review comments",
+      "description": "Jose Bezerra's personal skills: PR review, PR authoring, browser-driven PR UAT, multi-agent full PR review, inbox cleanup, Jira ticket authoring, daily brain-dump analysis, Spark MCP digest drill-down, personal coding-style guidelines, MCP QA journey testing, Spark alpha build releases, writing in his own voice, adversarial UX design challenge, guided git conflict resolution, addressing PR review comments, and borrowing pooled treehouse worktrees",
       "source": "./",
       "strict": false,
       "skills": [
@@ -30,7 +30,8 @@
         "./gs-create-alpha",
         "./ask-robert",
         "./resolve-conflicts",
-        "./address"
+        "./address",
+        "./worktree"
       ]
     },
     {
