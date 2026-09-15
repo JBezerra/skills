@@ -40,7 +40,8 @@
         "./explore",
         "./design",
         "./spec",
-        "./implement"
+        "./implement",
+        "./stress"
       ]
     }
   ]
