@@ -13,8 +13,6 @@ Every sdd skill reads and writes one folder per piece of work:
 | `design.md` | sdd:design | decisions D1..Dn settling each Q, assumptions, non-goals |
 | `test-cases.md` | sdd:design | black-box test cases TC-<Section><n>, each citing the Ds that make it normative |
 | `spec.md` | sdd:spec, sdd:implement updates status | tasks T-001.. with AC and status |
-| `stress.md` | sdd:stress | findings S1..Sn from the latest stress run against the plan |
-
 ## Task status
 
 Each task heading in `spec.md` carries its status: `### [ ] T-001: <title>`.

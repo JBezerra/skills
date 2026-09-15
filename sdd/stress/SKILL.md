@@ -14,8 +14,8 @@ Ad hoc check on the plan, run after sdd:design or sdd:spec. Locate the work fold
 1. **Pick the target.** `design` means `design.md` and `test-cases.md`; `spec` means `spec.md`; with neither, take `spec.md` when it exists, else `design.md`. `context.md` always goes along as background.
 2. **Dispatch one general-purpose subagent**, a fresh reader with no stake in the plan. Give it the absolute paths of the target files and the repo root (paths, never a summary, so it reads the plan as written) and the brief below.
 3. **Spot-check** every high finding: open its cited `file:line` and confirm the code says what the finding claims. Mark each `confirmed` or `unverified`; drop what the code contradicts and say so.
-4. **Write `stress.md`** from the template below, replacing any previous run, and report in chat: counts by severity and the high findings in one line each.
-5. **Route.** The user decides each finding: one that challenges a decision goes to sdd:design as a revisit; a missing task, touch point, or TC goes to a sdd:spec re-run; the rest get dismissed. The plan files stay as they are until then.
+4. **Report in chat** in the format below. The findings live only in the conversation; the work folder stays untouched.
+5. **Route.** The user decides each finding: one that challenges a decision goes to sdd:design as a revisit; a missing task, touch point, or TC goes to a sdd:spec re-run; the rest get dismissed.
 
 ## Subagent brief
 
@@ -31,12 +31,11 @@ Ad hoc check on the plan, run after sdd:design or sdd:spec. Locate the work fold
 >
 > Report each finding with: severity (high, medium, low), pass, the plan item it hits (`Dn`, `T-00n`, `TC-Xn`, or none), evidence as `file:line`, and a concrete scenario of what goes wrong and when. Describe the problem and leave the fix to the plan's authors. Work read-only.
 
-## stress.md template
+## Report format
+
+Open with the target file and counts by severity, then:
 
 ```markdown
-# <KEY>: stress
-Target: <spec.md | design.md>, run on <date> at <short sha>
-
 ### S1 [high] <the problem in one line>
 - Pass: <pre-mortem | trace | missed code | side effects | coupled fields>
 - Hits: <D3, T-002, TC-B4, or none>
