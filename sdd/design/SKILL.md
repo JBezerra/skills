@@ -1,6 +1,6 @@
 ---
 name: design
-description: Settle how to build the work by grilling the user on every open decision, recorded in design.md. Runs after sdd:explore, before sdd:spec.
+description: Settle how to build the work by grilling the user on every open decision, recorded in design.md, then derive the black-box test cases in test-cases.md. Runs after sdd:explore, before sdd:spec.
 argument-hint: "[GS-XXXX] [direction]"
 disable-model-invocation: true
 ---
@@ -19,11 +19,12 @@ Your output is **decisions**: which approach, what's in and out, how each fork f
 4. **Grill in rounds.** The frontier is every decision whose prerequisites are settled. Ask the whole frontier each round via `AskUserQuestion` (back-to-back calls when it exceeds 4): recommended option first, suffixed `(Recommended)`; each option's description says what choosing it means and what it costs. Open-ended questions go in plain text. After each round, write the answers into `design.md` and recompute the frontier.
 5. **Facts on demand.** When a decision needs a fact, look it up with targeted reads, or one subagent when it's broader, and append the fact with its `file:line` to the matching section of `context.md`. Keep asking the rest of the frontier meanwhile; only questions downstream of the lookup wait.
 6. **Assumptions out loud.** Anything you'd proceed on without a user answer gets stated in chat as an assumption and recorded as Ax, pending until the user accepts it.
-7. **Settle.** Done when every Q has a D (out-of-scope is a valid D), Open is empty, every Ax is accepted, and the user confirms shared understanding. Then set `Status: settled` and report: approach in two lines, decision count, anything notable deferred to non-goals. Next step: sdd:spec.
+7. **Test cases.** Once Open is empty, write `test-cases.md` from the template below. Group cases into lettered sections by feature area or user journey. Each title states the behavior as a claim ("Banner persists across navigation"). Preconditions describe a concrete user and data state. Expected results are observable, quote exact UI copy, and cite the Ds that make them normative. Cover the edges each decision implies (cancel, failure, expiry, repeat, delete then re-create), not just the happy path. Show the section list and case count in chat and apply feedback in place.
+8. **Settle.** Done when every Q has a D (out-of-scope is a valid D), Open is empty, every Ax is accepted, every behavioral D is cited by at least one TC, and the user confirms both files. Then set `Status: settled` and report: approach in two lines, decision count, test case count, anything notable deferred to non-goals. Next step: sdd:spec.
 
 ## Revisiting a decision
 
-When the user changes a settled D, rewrite it in place, reopen every decision whose `Depends on` names it, and set `Status: open`. If `spec.md` exists, tell the user it's now stale and needs a sdd:spec re-run.
+When the user changes a settled D, rewrite it in place, reopen every decision whose `Depends on` names it, rewrite every TC citing it, and set `Status: open`. If `spec.md` exists, tell the user it's now stale and needs a sdd:spec re-run.
 
 ## design.md template
 
@@ -53,4 +54,38 @@ The chosen approach in 3–5 sentences: what changes where, at module level.
 
 ## Open
 - <decisions still on the frontier; empty when settled>
+```
+
+## test-cases.md template
+
+```markdown
+# <KEY>: test cases
+
+Decisions are normative for the cases below. Source: `design.md`.
+
+| #  | Decision |
+| -- | -------- |
+| D1 | <chosen outcome, one or two sentences> |
+
+# Section A: <feature area or user journey>
+
+### TC-A1: <behavior stated as a claim>
+
+- Precondition: <concrete user and data state>
+- Steps:
+  1. <user action>
+- Expected: <observable outcome, exact UI copy in quotes, (Dn)>
+
+### TC-A2: <claim with variants>
+
+- Precondition (a): <state>
+  - Steps: <action>
+  - Expected: <outcome>
+- Precondition (b): <state>
+  - Steps: <action>
+  - Expected: <outcome>
+
+---
+
+# Section B: ...
 ```

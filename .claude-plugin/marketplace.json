@@ -39,7 +39,8 @@
       "strict": false,
       "skills": [
         "./explore",
-        "./design"
+        "./design",
+        "./spec"
       ]
     }
   ]
