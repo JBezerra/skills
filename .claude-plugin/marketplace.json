@@ -38,7 +38,8 @@
       "source": "./sdd",
       "strict": false,
       "skills": [
-        "./explore"
+        "./explore",
+        "./design"
       ]
     }
   ]
