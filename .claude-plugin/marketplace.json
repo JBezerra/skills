@@ -18,7 +18,7 @@
         "./create-pr",
         "./clean-inbox",
         "./jira-ticket",
-        "./sdd",
+        "./sdd-legacy",
         "./daily-brain",
         "./coding-guidelines",
         "./gs-qa-mcp",
@@ -30,6 +30,15 @@
         "./gs-o11y-troubleshoot",
         "./gs-create-alpha",
         "./ask-robert"
+      ]
+    },
+    {
+      "name": "sdd",
+      "description": "Spec-driven development: explore a ticket against the codebase, design the solution, write the spec, implement it task by task",
+      "source": "./sdd",
+      "strict": false,
+      "skills": [
+        "./explore"
       ]
     }
   ]
