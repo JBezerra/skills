@@ -22,6 +22,7 @@ Manual acceptance testing of a PR, driven through the real running app. You are 
 4. **Prove findings.** Before calling something a finding, produce the concrete observation: the badge text, the stored document, the message string, the empty container. No inference-only findings.
 5. **Don't fix anything.** Not a typo, not a one-liner. This is UAT.
 6. **Parallelize everything except the browser.** Context gathering, DB reads, and independent shell commands go out in one block. Browser interaction is one session with shared page state, so UI steps stay sequential and ordered.
+7. **Close the browser when the run ends, however it ends.** agent-browser's Chrome and daemon outlive the Claude session; every unclosed run leaks ~1-2 GB that stays resident for days. See Phase 4.
 
 ## Phase 0 — target and preflight
 
@@ -87,11 +88,16 @@ While testing:
 - Hit a blocker? Record it with its exact reproduction, then route around it and execute every remaining scenario that doesn't depend on it. Do not end the run early. Track which scenarios became unreachable.
 - When a finding needs data you don't have locally (prod-shaped volume, a real integration), say so explicitly instead of asserting it.
 
-## Phase 4 — report
+## Phase 4 — teardown and report
+
+Teardown first, before writing the report:
+
+1. Restore any seeded fixtures (Phase 3).
+2. `agent_browser_close`. If the run used a named session, close that session; if you opened more than one, close each. Do this on every exit path after the browser was opened: completed run, blocker, preflight or login failure mid-run, user abort.
 
 Append the results to the plan file and print the same report in chat:
 
-1. **Test plan executed** — environment, dataset used, one line listing the flows exercised, and whether the fixture restore succeeded.
+1. **Test plan executed** — environment, dataset used, one line listing the flows exercised, whether the fixture restore succeeded, and whether the browser was closed.
 2. **Blockers** — anything that loses data, breaks the save, or makes the feature unusable. Each with the exact reproduction and observed versus expected.
 3. **Checklist results** — a table of every item from Phase 2, stated and derived together, marked ✓ / ✗ / unreachable. For each ✗, what the app actually did. For each unreachable, which blocker prevented it.
 4. **Other confirmed issues** — real but non-blocking, each with its reproduction.
